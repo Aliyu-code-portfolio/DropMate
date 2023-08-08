@@ -12,7 +12,6 @@ namespace DropMate.Persistence.Repositories
 {
     internal sealed class UserRepository :RepositoryBase<User>, IUserRepository
     {
-        //check for deleted before pulling user
         public UserRepository(RepositoryContext repository):base(repository)
         {
             
@@ -27,20 +26,30 @@ namespace DropMate.Persistence.Repositories
             Delete(user);
         }
 
+        public void PermanentDeleteUser(User user)
+        {
+            PermanentDelete(user);
+        }
+
         public async Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges)
         {
-            return await FindAll(trackChanges).Where(u=> !u.IsDeleted).ToListAsync();
+            return await FindAll(trackChanges).Where(u=> !u.IsDeleted).Include(u=>u.TravelPlans).Include(u=>u.Packages).ToListAsync();
         }
 
-        public Task<User> GetByEmailAsync(string email, bool trackChanges)
+        public async Task<User> GetByEmailAsync(string email, bool trackChanges)
         {
-            throw new NotImplementedException();
+            return await FindByCondition(u => u.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase)
+            && !u.IsDeleted, trackChanges).Where(u=>!u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
+            .FirstOrDefaultAsync();
         }
 
-        public Task<User> GetByIdAsync(string id, bool trackChanges)
+        public async Task<User> GetByIdAsync(string id, bool trackChanges)
         {
-            throw new NotImplementedException();
+            return await FindByCondition(u => u.Id.Equals(id, StringComparison.CurrentCultureIgnoreCase)
+            && !u.IsDeleted, trackChanges).Where(u => !u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
+            .FirstOrDefaultAsync();
         }
+
 
         public void UpdateUser(User user)
         {

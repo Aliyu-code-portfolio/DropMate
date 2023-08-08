@@ -38,7 +38,6 @@ namespace DropMate.Domain.Models
 
         [Required(ErrorMessage = "Status is required.")]
         public Status Status { get; set; }
-        public bool IsDeleted { get; set; }
 
         // Navigation properties
         public TravelPlan TravelPlan { get; set; }

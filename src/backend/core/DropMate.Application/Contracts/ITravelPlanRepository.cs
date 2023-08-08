@@ -8,7 +8,8 @@ namespace DropMate.Application.Contracts
         Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges);
         void UpdateTravelPlan(TravelPlan travelPlan);
         void DeleteTravelPlan(TravelPlan travelPlan);
-        void DeleteMultiTravelPlan(IEnumerable<TravelPlan> travelPlans);
+        void PermanentDeleteTravelPlan(TravelPlan travelPlan);
+        void PermanentDeleteMultiTravelPlan(IEnumerable<TravelPlan> travelPlans);
         void CreateTravelPlan(TravelPlan travelPlan);
     }
 }

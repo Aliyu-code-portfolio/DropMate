@@ -10,10 +10,11 @@ namespace DropMate.Application.Common
     public interface IRepositoryBase<T>
     {
         IQueryable<T> FindAll(bool trackChanges);
-        IEnumerable<T> FindByCondition(Expression<Func<T, bool>> condition, bool trackChanges);
+        IQueryable<T> FindByCondition(Expression<Func<T, bool>> condition, bool trackChanges);
         void Update(T entity);
         void Delete(T entity);
-        void DeleteRange(IEnumerable<T> entities);
+        void PermanentDelete(T entity);
+        void PermanentDeleteRange(IEnumerable<T> entities);
         void Add(T entity);
         void AddRange(IEnumerable<T> entities); 
     }

@@ -1,4 +1,5 @@
 ﻿using DropMate.Application.Common;
+using DropMate.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DropMate.Persistence.Common
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class, IBaseEntity
     {
         public DbSet<T> _dbSet;
 
@@ -30,10 +31,16 @@ namespace DropMate.Persistence.Common
 
         public void Delete(T entity)
         {
+            entity.IsDeleted = true;
+            _dbSet.Update(entity);
+        }
+
+        public void PermanentDelete(T entity)
+        {
             _dbSet.Remove(entity);
         }
 
-        public void DeleteRange(IEnumerable<T> entities)
+        public void PermanentDeleteRange(IEnumerable<T> entities)
         {
             _dbSet.RemoveRange(entities);
         }
@@ -44,7 +51,7 @@ namespace DropMate.Persistence.Common
                 _dbSet;
         }
 
-        public IEnumerable<T> FindByCondition(Expression<Func<T, bool>> condition, bool trackChanges)
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> condition, bool trackChanges)
         {
             return !trackChanges ? _dbSet.Where(condition).AsNoTracking() :
                 _dbSet.Where(condition);
@@ -54,5 +61,6 @@ namespace DropMate.Persistence.Common
         {
             _dbSet.Update(entity);
         }
+
     }
 }

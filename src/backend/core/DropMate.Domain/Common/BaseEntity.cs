@@ -2,7 +2,7 @@
 
 namespace DropMate.Domain.Common
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity:IBaseEntity
     {
         [Key]
         public int Id { get; set; }
@@ -11,5 +11,6 @@ namespace DropMate.Domain.Common
         public DateTime? ModifiedDate { get; set; }
         [MaxLength(50)]
         public string ModifiedBy { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

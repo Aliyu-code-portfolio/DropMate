@@ -11,11 +11,12 @@ namespace DropMate.Application.Contracts
     {
         Task<IEnumerable<Package>> GetAllPackagesAsync(bool trackChanges);
         Task<IEnumerable<Package>> GetAllUserPackagesAsync(string userId, bool trackChanges);
-        Task<IEnumerable<Package>> GetAllTravelPlanPackagesAsync(int id, bool trackChanges);
+        Task<IEnumerable<Package>> GetAllTravelPlanPackagesAsync(int travelPlanId, bool trackChanges);
         Task<Package> GetPackageByIdAsync(int id, bool trackChanges);
         void UpdatePackage(Package package);
         void DeletePackage(Package package);
-        void DeleteMultiPackage(IEnumerable<Package> packages);
+        void PermanentDeletePackage(Package package);
+        void PermanentDeleteMultiPackage(IEnumerable<Package> packages);
         void CreatePackage(Package package);
     }
 }

@@ -25,8 +25,6 @@ namespace DropMate.Domain.Models
 
         public bool IsActive { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         [Column(TypeName ="money")]
         public decimal Price { get; set; }
 

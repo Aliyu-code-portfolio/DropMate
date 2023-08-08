@@ -10,10 +10,6 @@ namespace DropMate.Domain.Models
         [Required(ErrorMessage ="Package ID is required")]
         public int PackageId { get; set; }
 
-        [Required(ErrorMessage = "User ID is required")]
-        [ForeignKey(nameof(User))]
-        public string UserId { get; set; }
-
         [Required(ErrorMessage = "Rate is required.")]
         public Rate Rate { get; set; }
 

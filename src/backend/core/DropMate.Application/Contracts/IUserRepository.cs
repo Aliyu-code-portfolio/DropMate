@@ -9,6 +9,7 @@ namespace DropMate.Application.Contracts
         Task<User> GetByEmailAsync(string email, bool trackChanges);
         void UpdateUser(User user);
         void DeleteUser(User user);
+        void PermanentDeleteUser(User user);
         void CreateUser(User user);
     }
 }

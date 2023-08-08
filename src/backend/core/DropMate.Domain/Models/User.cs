@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DropMate.Domain.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace DropMate.Domain.Models
 {
-    public class User
+    public class User:IBaseEntity
     {
         [Key]
         public string Id { get; set; }
