@@ -23,7 +23,7 @@ namespace DropMate.Domain.Models
         [Required(ErrorMessage = "Maximum package weight is required.")]
         public PackageWeight MaximumPackageWeight { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [Column(TypeName ="money")]
         public decimal Price { get; set; }

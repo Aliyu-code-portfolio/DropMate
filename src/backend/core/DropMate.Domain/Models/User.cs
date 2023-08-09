@@ -35,9 +35,9 @@ namespace DropMate.Domain.Models
         public bool IsDeleted { get; set; }
 
         //Navigation property
-        public ICollection<TravelPlan> TravelPlans { get; set; }
-        public ICollection<Package> Packages { get; set; }
-        public ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<TravelPlan>? TravelPlans { get; set; }
+        public virtual ICollection<Package>? Packages { get; set; }
+        public virtual ICollection<Review>? Reviews { get; set; }
 
     }
 }

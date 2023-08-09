@@ -6,6 +6,7 @@ namespace DropMate.Application.Contracts
     {
         Task<IEnumerable<TravelPlan>> GetAllTravelPlanAsync(bool trackChanges);
         Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges);
+        Task<IEnumerable<TravelPlan>> GetAllUserTravelPlanAsync(string userId, bool trackChanges);
         void UpdateTravelPlan(TravelPlan travelPlan);
         void DeleteTravelPlan(TravelPlan travelPlan);
         void PermanentDeleteTravelPlan(TravelPlan travelPlan);

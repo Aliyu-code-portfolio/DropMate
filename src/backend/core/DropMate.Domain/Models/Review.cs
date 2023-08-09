@@ -14,7 +14,7 @@ namespace DropMate.Domain.Models
         public Rate Rate { get; set; }
 
         [MaxLength(500, ErrorMessage = "Comment can't exceed 500 characters.")]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         // Navigation properties
         public Package Package { get; set; }

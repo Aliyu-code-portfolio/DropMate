@@ -15,15 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "presentation", "presentation", "{18B601EE-E498-4664-B9F6-D2D9F8E7E5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Domain", "src\backend\core\DropMate.Domain\DropMate.Domain.csproj", "{5E019D38-2A76-4766-A0D0-7392FE99E9E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Domain", "src\backend\core\DropMate.Domain\DropMate.Domain.csproj", "{5E019D38-2A76-4766-A0D0-7392FE99E9E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Application", "src\backend\core\DropMate.Application\DropMate.Application.csproj", "{0A224E64-4F3B-4681-8DBA-947C8695C869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Application", "src\backend\core\DropMate.Application\DropMate.Application.csproj", "{0A224E64-4F3B-4681-8DBA-947C8695C869}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Persistence", "src\backend\infrastructure\DropMate.Persistence\DropMate.Persistence.csproj", "{5A86FCD8-5A62-4536-B51D-7DBB109CBCE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Persistence", "src\backend\infrastructure\DropMate.Persistence\DropMate.Persistence.csproj", "{5A86FCD8-5A62-4536-B51D-7DBB109CBCE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Shared", "src\backend\core\DropMate.Shared\DropMate.Shared.csproj", "{6AD3D1BE-EAEF-4017-B4C4-B828549DD944}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Shared", "src\backend\core\DropMate.Shared\DropMate.Shared.csproj", "{6AD3D1BE-EAEF-4017-B4C4-B828549DD944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.WebAPI", "src\backend\presentation\DropMate.WebAPI\DropMate.WebAPI.csproj", "{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.WebAPI", "src\backend\presentation\DropMate.WebAPI\DropMate.WebAPI.csproj", "{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Service", "src\backend\infrastructure\DropMate.Service\DropMate.Service.csproj", "{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "src\backend\core\LoggerService\LoggerService.csproj", "{920DF0B3-10D3-49C9-934A-97CC34538A51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{920DF0B3-10D3-49C9-934A-97CC34538A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{920DF0B3-10D3-49C9-934A-97CC34538A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{920DF0B3-10D3-49C9-934A-97CC34538A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{920DF0B3-10D3-49C9-934A-97CC34538A51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +78,8 @@ Global
 		{5A86FCD8-5A62-4536-B51D-7DBB109CBCE9} = {8EFB5EAE-0C72-4024-8A21-F8F18982B667}
 		{6AD3D1BE-EAEF-4017-B4C4-B828549DD944} = {C56677DD-D250-4A66-B0AF-6B79433CE804}
 		{CC04C5D2-564B-4B97-809A-BD9ADA6DA290} = {18B601EE-E498-4664-B9F6-D2D9F8E7E5BF}
+		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D} = {8EFB5EAE-0C72-4024-8A21-F8F18982B667}
+		{920DF0B3-10D3-49C9-934A-97CC34538A51} = {C56677DD-D250-4A66-B0AF-6B79433CE804}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5CCC6B3D-D108-42C1-929C-F054BA81E4A8}

@@ -52,5 +52,10 @@ namespace DropMate.Persistence.Repositories
             Update(travelPlan);
         }
 
+        public async Task<IEnumerable<TravelPlan>> GetAllUserTravelPlanAsync(string userId, bool trackChanges)
+        {
+            return await FindByCondition(t => !t.IsDeleted && t.TravelerId.Equals(userId), trackChanges)
+                .Include(t => t.Packages).Include(t => t.Traveler).ToListAsync();
+        }
     }
 }

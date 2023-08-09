@@ -7,15 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Utilities\" />
+    <PackageReference Include="NLog" Version="5.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DropMate.Domain\DropMate.Domain.csproj" />
+    <ProjectReference Include="..\DropMate.Application\DropMate.Application.csproj" />
   </ItemGroup>
 
 </Project>
