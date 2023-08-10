@@ -27,26 +27,31 @@ namespace DropMate.Service.Services
             _unitOfWork.UserRepository.CreateUser(user);
             await _unitOfWork.SaveAsync();
             UserResponseDto responseDto = _mapper.Map<UserResponseDto>(user);
-            return new StandardResponse<UserResponseDto>(201,true,string.Empty,responseDto);
+            return new StandardResponse<UserResponseDto>(201, true, string.Empty, responseDto);
         }
 
         public async Task DeleteUser(string id, bool trackChanges)
         {
-            User user = await GetUserWithId(id,trackChanges);
+            User user = await GetUserWithId(id, trackChanges);
             _unitOfWork.UserRepository.DeleteUser(user);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task<StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>> GetAllUsers(UserRequestParameters requestParameter, bool trackChanges)
         {
+            if (!requestParameter.IsValidDate)
+            {
+                throw new MaxJoinDateBadRequest();
+
+            }
             PagedList<User> users = await _unitOfWork.UserRepository.GetAllUsersAsync(requestParameter, trackChanges);
-            IEnumerable<UserResponseDto> usersDto = _mapper.Map<IEnumerable<UserResponseDto>>(users.);
-            return new StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>(200, true, string.Empty,(usersDto,users.MetaData));
+            IEnumerable<UserResponseDto> usersDto = _mapper.Map<IEnumerable<UserResponseDto>>(users);
+            return new StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>(200, true, string.Empty, (usersDto, users.MetaData));
         }
 
         public async Task<StandardResponse<UserResponseDto>> GetUserByEmail(string email, bool trackChanges)
         {
-            User user = await _unitOfWork.UserRepository.GetByEmailAsync(email,trackChanges);
+            User user = await _unitOfWork.UserRepository.GetByEmailAsync(email, trackChanges);
             UserResponseDto userDto = _mapper.Map<UserResponseDto>(user);
             return new StandardResponse<UserResponseDto>(200, true, string.Empty, userDto);
         }
@@ -55,14 +60,14 @@ namespace DropMate.Service.Services
         {
             User user = await GetUserWithId(id, trackChanges);
             UserResponseDto userDto = _mapper.Map<UserResponseDto>(user);
-            return new StandardResponse<UserResponseDto>(200,true,string.Empty,userDto);
+            return new StandardResponse<UserResponseDto>(200, true, string.Empty, userDto);
         }
 
         public async Task UpdateUser(string id, UserUpdateRequestDto requestDto)
         {
             User user = await GetUserWithId(id, false);
             user.Address = requestDto.Address;
-            user.PhoneNumber =requestDto.PhoneNumber;
+            user.PhoneNumber = requestDto.PhoneNumber;
             _unitOfWork.UserRepository.UpdateUser(user);
             await _unitOfWork.SaveAsync();
         }

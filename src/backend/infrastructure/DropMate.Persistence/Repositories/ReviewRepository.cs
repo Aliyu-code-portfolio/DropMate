@@ -38,10 +38,12 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<PagedList<Review>> GetAllReviewsAsync(ReviewRequestParameters requestParameters ,bool trackChanges)
         {
-            List<Review> reviews = await FindAll(trackChanges)
+            List<Review> reviews = await FindAll(trackChanges).Where(r=>(uint)r.Rate>=requestParameters.MinRating
+            && (uint)r.Rate <= requestParameters.MaxRating)
                 .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
                 .Include(r=>r.Package).ToListAsync();
-            int count = await FindAll(trackChanges).CountAsync();
+            int count = await FindAll(trackChanges).Where(r => (uint)r.Rate >= requestParameters.MinRating
+            && (uint)r.Rate <= requestParameters.MaxRating).CountAsync();
             return new PagedList<Review>(reviews, count,requestParameters.PageNumber,requestParameters.PageSize);
         }
 

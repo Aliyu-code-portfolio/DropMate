@@ -39,6 +39,10 @@ namespace DropMate.Service.Services
 
         public async Task<StandardResponse<(IEnumerable<ReviewResponseDto>,MetaData)>> GetAllReviewsAsync(ReviewRequestParameters requestParameters, bool trackChanges)
         {
+            if (!requestParameters.IsValidRating)
+            {
+                throw new MaxRatingBadRequest();
+            }
             PagedList<Review> reviews = await _unitOfWork.ReviewRepository.GetAllReviewsAsync(requestParameters ,trackChanges);
             IEnumerable<ReviewResponseDto> reviewsDtos = _mapper.Map<IEnumerable<ReviewResponseDto>>(reviews);
             return new StandardResponse<(IEnumerable<ReviewResponseDto>,MetaData)>(200, true, string.Empty, (reviewsDtos,reviews.MetaData));

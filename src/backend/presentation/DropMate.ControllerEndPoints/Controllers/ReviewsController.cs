@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DropMate.ControllerEndPoints.Controllers
@@ -27,9 +28,10 @@ namespace DropMate.ControllerEndPoints.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllReviews([FromQuery]ReviewRequestParameters requestParameters)
         {
-            StandardResponse<(IEnumerable<ReviewResponseDto>result,MetaData metaData> result = await _services.ReviewService
+            StandardResponse<(IEnumerable<ReviewResponseDto> reviews,MetaData metaData)> result = await _services.ReviewService
                 .GetAllReviewsAsync(requestParameters, false);
-            return Ok(result);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
+            return Ok(result.Data.reviews);
         }
 
         [HttpGet("{id}")]

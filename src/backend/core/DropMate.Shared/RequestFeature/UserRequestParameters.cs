@@ -9,5 +9,8 @@ namespace DropMate.Shared.RequestFeature
 {
     public class UserRequestParameters:RequestParameters
     {
+        public DateTime MinJoinDate { get; set; }= DateTime.MinValue;
+        public DateTime MaxJoinDate { get; set; }=DateTime.MaxValue;
+        public bool IsValidDate => MaxJoinDate >= MinJoinDate;
     }
 }

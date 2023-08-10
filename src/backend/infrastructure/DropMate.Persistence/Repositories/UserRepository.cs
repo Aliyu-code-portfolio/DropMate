@@ -35,10 +35,12 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<PagedList<User>> GetAllUsersAsync(UserRequestParameters requestParameters, bool trackChanges)
         {
-            List<User> users = await FindAll(trackChanges).Where(u=> !u.IsDeleted)
+            List<User> users = await FindAll(trackChanges).Where(u=> !u.IsDeleted 
+            && u.DateJoined>=requestParameters.MinJoinDate && u.DateJoined<=requestParameters.MaxJoinDate)
                 .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
                 .Include(u=>u.TravelPlans).Include(u=>u.Packages).ToListAsync();
-            int count = await FindAll(trackChanges).Where(u => !u.IsDeleted).CountAsync();
+            int count = await FindAll(trackChanges).Where(u => !u.IsDeleted && u.DateJoined >= requestParameters.MinJoinDate 
+            && u.DateJoined <= requestParameters.MaxJoinDate).CountAsync();
             return new PagedList<User>(users, count,requestParameters.PageNumber,requestParameters.PageSize);
         }
 

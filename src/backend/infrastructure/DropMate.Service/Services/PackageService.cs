@@ -57,7 +57,7 @@ namespace DropMate.Service.Services
         {
             PagedList<Package> packages = await _unitOfWork.PackageRepository.GetAllTravelPlanPackagesAsync(requestParameter, travelPlanId, trackChanges);
             IEnumerable<PackageResponseDto> packageResponseDtos = _mapper.Map<IEnumerable<PackageResponseDto>>(packages);
-            return new StandardResponse<(IEnumerable<PackageResponseDto>, MetaData)>(200, true, string.Empty, (packageResponseDtos, packages.MetaData)));
+            return new StandardResponse<(IEnumerable<PackageResponseDto>, MetaData)>(200, true, string.Empty, (packageResponseDtos, packages.MetaData));
         }
 
         public async Task<StandardResponse<(IEnumerable<PackageResponseDto>,MetaData)>> GetAllUserPackagesAsync(PackageRequestParameter requestParameter, string userId, bool trackChanges)
