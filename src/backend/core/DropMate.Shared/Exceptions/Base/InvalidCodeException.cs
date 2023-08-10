@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DropMate.Shared.Exceptions.Base
 {
-    public abstract class NotAlterable:Exception
+    public class InvalidCodeException:Exception
     {
-        public NotAlterable(string message):base(message)
+        public InvalidCodeException(string message):base(message)
         {
             
         }

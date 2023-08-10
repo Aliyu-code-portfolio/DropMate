@@ -1,4 +1,6 @@
 ﻿using DropMate.Application.Common;
+using DropMate.Shared.ErrorModels;
+using DropMate.Shared.Exceptions.Base;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace DropMate.WebAPI.Extensions
@@ -19,7 +21,8 @@ namespace DropMate.WebAPI.Extensions
                         context.Response.StatusCode = contextFeature.Error switch
                         {
                             NotFoundException => StatusCodes.Status404NotFound,
-                            //CannotCreateException => StatusCodes.Status406NotAcceptable,
+                            NotAlterableException => StatusCodes.Status406NotAcceptable,
+                            InvalidCodeException => StatusCodes.Status403Forbidden,
                             _ => StatusCodes.Status500InternalServerError
                         }; ;
                         logger.LogError($"Something went wrong: {contextFeature.Error}");

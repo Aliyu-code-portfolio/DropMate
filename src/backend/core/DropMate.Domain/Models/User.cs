@@ -1,11 +1,13 @@
 ﻿using DropMate.Domain.Common;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DropMate.Domain.Models
 {
     public class User:IBaseEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
         [Required(ErrorMessage = "First name is required.")]
@@ -21,13 +23,13 @@ namespace DropMate.Domain.Models
         public string Email { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number.")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [MaxLength(200, ErrorMessage = "Maximum length is 200")]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [MaxLength(200, ErrorMessage = "Maximum length is 200")]
-        public string ProfilePicURL { get; set; }
+        public string? ProfilePicURL { get; set; }
 
         [Required]
         public DateTime DateJoined { get; set; }= DateTime.Now;

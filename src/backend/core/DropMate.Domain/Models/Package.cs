@@ -8,7 +8,7 @@ namespace DropMate.Domain.Models
     public class Package:BaseEntity
     {
         [ForeignKey(nameof(TravelPlan))]
-        public int TravelPlanId { get; set; }
+        public int? TravelPlanId { get; set; }
 
         [Required(ErrorMessage ="User ID is required")]
         [ForeignKey(nameof(User))]
@@ -18,11 +18,12 @@ namespace DropMate.Domain.Models
         [MaxLength(50, ErrorMessage = "Maximum length is 50")]
         public string DeliveryContactName { get; set; }
 
+        [Required(ErrorMessage = "Delivery contact number is required.")]
         [Phone(ErrorMessage = "Invalid phone number.")]
         public string DeliveryContactNumber { get; set; }
 
         [MaxLength(200,ErrorMessage ="Maximum length is 200")]
-        public string PackageImageUrl { get; set; }
+        public string? PackageImageUrl { get; set; }
 
         [Required(ErrorMessage = "Departure location is required.")]
         public LagosLocation DepartureLocation { get; set; }
@@ -36,13 +37,21 @@ namespace DropMate.Domain.Models
         [Required(ErrorMessage = "Package weight is required.")]
         public PackageWeight PackageWeight { get; set; }
 
+        [Column(TypeName = "money")]
+        public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Package recieve code is required.")]
+        public int RecieveCode { get; set; }
+        [Required(ErrorMessage = "Package deliver code is required.")]
+        public int DeliverCode { get; set; }
+
         [Required(ErrorMessage = "Status is required.")]
         public Status Status { get; set; }
 
         // Navigation properties
-        public TravelPlan TravelPlan { get; set; }
-        public User Owner { get; set; }
-        public Review Review { get; set; }
+        public virtual TravelPlan? TravelPlan { get; set; }
+        public virtual User? Owner { get; set; }
+        public virtual Review? Review { get; set; }
 
     }
 }

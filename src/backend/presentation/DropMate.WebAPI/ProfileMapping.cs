@@ -11,8 +11,13 @@ namespace DropMate.WebAPI
         {
             CreateMap<User, UserResponseDto>();
             CreateMap<UserCreateRequestDto, User>();
+            CreateMap<UserUpdateRequestDto, User>();
             CreateMap<TravelPlan, TravelPlanResponse>();
             CreateMap<TravelPlanRequestDto, TravelPlan>();
+            CreateMap<Package, PackageResponseDto>();
+            CreateMap<PackageRequestDto, Package>();
+            CreateMap<Review, ReviewResponseDto>();
+            CreateMap<ReviewRequestDto, Review>();
         }
     }
 }

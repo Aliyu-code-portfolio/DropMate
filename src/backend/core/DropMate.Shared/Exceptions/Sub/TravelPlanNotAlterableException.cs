@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DropMate.Shared.Exceptions.Sub
 {
-    public class TravelPlanNotAlterableException:NotAlterable
+    public class TravelPlanNotAlterableException:NotAlterableException
     {
-        public TravelPlanNotAlterableException(object id):base($"The Travel plan with identity: {id} is cannot be alter anymore in the database. The plan has been subscribed to")
+        public TravelPlanNotAlterableException(object id):base($"The Travel plan with identity: {id} cannot be alter anymore in the database. The plan has been subscribed to")
         {
             
         }

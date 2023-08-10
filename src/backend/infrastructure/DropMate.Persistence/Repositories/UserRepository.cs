@@ -1,6 +1,8 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -31,21 +33,25 @@ namespace DropMate.Persistence.Repositories
             PermanentDelete(user);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges)
+        public async Task<PagedList<User>> GetAllUsersAsync(UserRequestParameters requestParameters, bool trackChanges)
         {
-            return await FindAll(trackChanges).Where(u=> !u.IsDeleted).Include(u=>u.TravelPlans).Include(u=>u.Packages).ToListAsync();
+            List<User> users = await FindAll(trackChanges).Where(u=> !u.IsDeleted)
+                .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
+                .Include(u=>u.TravelPlans).Include(u=>u.Packages).ToListAsync();
+            int count = await FindAll(trackChanges).Where(u => !u.IsDeleted).CountAsync();
+            return new PagedList<User>(users, count,requestParameters.PageNumber,requestParameters.PageSize);
         }
 
         public async Task<User> GetByEmailAsync(string email, bool trackChanges)
         {
-            return await FindByCondition(u => u.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase)
+            return await FindByCondition(u => u.Email.ToLower().Contains(email.ToLower())
             && !u.IsDeleted, trackChanges).Where(u=>!u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
             .FirstOrDefaultAsync();
         }
 
         public async Task<User> GetByIdAsync(string id, bool trackChanges)
         {
-            return await FindByCondition(u => u.Id.Equals(id, StringComparison.CurrentCultureIgnoreCase)
+            return await FindByCondition(u => u.Id.ToLower().Contains(id.ToLower())
             && !u.IsDeleted, trackChanges).Where(u => !u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
             .FirstOrDefaultAsync();
         }

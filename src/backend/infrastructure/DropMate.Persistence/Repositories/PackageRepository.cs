@@ -1,12 +1,9 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DropMate.Persistence.Repositories
 {
@@ -26,20 +23,33 @@ namespace DropMate.Persistence.Repositories
             Delete(package);
         }
 
-        public async Task<IEnumerable<Package>> GetAllPackagesAsync(bool trackChanges)
+        public async Task<PagedList<Package>> GetAllPackagesAsync(PackageRequestParameter requestParameter,bool trackChanges)
         {
-            return await FindAll(trackChanges).Where(p => !p.IsDeleted).Include(p => p.Owner)
+            List<Package> packages = await FindAll(trackChanges).Where(p => !p.IsDeleted).Skip((requestParameter.PageNumber-1)*requestParameter.PageSize)
+                .Take(requestParameter.PageSize).Include(p => p.Owner)
                 .Include(p => p.TravelPlan).Include(p => p.Review).ToListAsync();
+            int count = await FindAll(trackChanges).Where(p => !p.IsDeleted).CountAsync();  
+            return new PagedList<Package>(packages, count,requestParameter.PageNumber,requestParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Package>> GetAllTravelPlanPackagesAsync(int travelPlanId, bool trackChanges)
+        public async Task<PagedList<Package>> GetAllTravelPlanPackagesAsync(PackageRequestParameter requestParameter, int travelPlanId, bool trackChanges)
         {
-            return await FindByCondition(p => p.TravelPlanId.Equals(travelPlanId), trackChanges).Where(p => !p.IsDeleted).ToListAsync();
+            List<Package> packages = await FindByCondition(p => p.TravelPlanId.Equals(travelPlanId), trackChanges)
+                .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
+                .Take(requestParameter.PageSize)
+                .Where(p => !p.IsDeleted).ToListAsync();
+            int count = await FindAll(trackChanges).Where(p => !p.IsDeleted).CountAsync();
+            return new PagedList<Package>(packages, count, requestParameter.PageNumber, requestParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Package>> GetAllUserPackagesAsync(string userId, bool trackChanges)
+        public async Task<PagedList<Package>> GetAllUserPackagesAsync(PackageRequestParameter requestParameter, string userId, bool trackChanges)
         {
-            return await FindByCondition(p => p.PackageOwnerId.Equals(userId), trackChanges).Where(p => !p.IsDeleted).ToListAsync();
+            List<Package> packages = await FindByCondition(p => p.PackageOwnerId.Contains(userId), trackChanges)
+                .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
+                .Take(requestParameter.PageSize)
+                .Where(p => !p.IsDeleted).ToListAsync();
+            int count = await FindAll(trackChanges).Where(p => !p.IsDeleted).CountAsync();
+            return new PagedList<Package>(packages, count, requestParameter.PageNumber, requestParameter.PageSize);
         }
 
         public async Task<Package> GetPackageByIdAsync(int id, bool trackChanges)

@@ -1,6 +1,8 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,9 +36,13 @@ namespace DropMate.Persistence.Repositories
             PermanentDeleteRange(reviews);
         }
 
-        public async Task<IEnumerable<Review>> GetAllReviewsAsync(bool trackChanges)
+        public async Task<PagedList<Review>> GetAllReviewsAsync(ReviewRequestParameters requestParameters ,bool trackChanges)
         {
-            return await FindAll(trackChanges).Include(r=>r.Package).ToListAsync();
+            List<Review> reviews = await FindAll(trackChanges)
+                .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
+                .Include(r=>r.Package).ToListAsync();
+            int count = await FindAll(trackChanges).CountAsync();
+            return new PagedList<Review>(reviews, count,requestParameters.PageNumber,requestParameters.PageSize);
         }
 
         /*public async Task<IEnumerable<Review>> GetAllTravelPlanReviewsAsync(int travelPlanId, bool trackChanges)

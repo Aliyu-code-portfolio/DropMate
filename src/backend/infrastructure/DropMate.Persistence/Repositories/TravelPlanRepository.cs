@@ -1,6 +1,8 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,9 @@ namespace DropMate.Persistence.Repositories
 {
     internal sealed class TravelPlanRepository : RepositoryBase<TravelPlan>, ITravelPlanRepository
     {
-        public TravelPlanRepository(RepositoryContext repository):base(repository)
+        public TravelPlanRepository(RepositoryContext repository) : base(repository)
         {
-            
+
         }
 
         public void CreateTravelPlan(TravelPlan travelPlan)
@@ -35,10 +37,14 @@ namespace DropMate.Persistence.Repositories
             PermanentDeleteMultiTravelPlan(travelPlans);
         }
 
-        public async Task<IEnumerable<TravelPlan>> GetAllTravelPlanAsync(bool trackChanges)
+        public async Task<PagedList<TravelPlan>> GetAllTravelPlanAsync(TravelPlanRequestParameters requestParameters, bool trackChanges)
         {
-            return await FindAll(trackChanges).Where(t => !t.IsDeleted).Include(t => t.Packages)
+            List<TravelPlan> plans = await FindAll(trackChanges).Where(t => !t.IsDeleted)
+                .Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+                .Take(requestParameters.PageSize).Include(t => t.Packages)
                 .Include(t => t.Traveler).ToListAsync();
+            int count = await FindAll(trackChanges).Where(t => !t.IsDeleted).CountAsync();
+            return new PagedList<TravelPlan>(plans, count, requestParameters.PageNumber, requestParameters.PageSize);
         }
 
         public async Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges)
@@ -52,10 +58,14 @@ namespace DropMate.Persistence.Repositories
             Update(travelPlan);
         }
 
-        public async Task<IEnumerable<TravelPlan>> GetAllUserTravelPlanAsync(string userId, bool trackChanges)
+        public async Task<PagedList<TravelPlan>> GetAllUserTravelPlanAsync(TravelPlanRequestParameters requestParameters, string userId, bool trackChanges)
         {
-            return await FindByCondition(t => !t.IsDeleted && t.TravelerId.Equals(userId), trackChanges)
-                .Include(t => t.Packages).Include(t => t.Traveler).ToListAsync();
+            List<TravelPlan> plans = await FindByCondition(t => !t.IsDeleted && t.TravelerId.ToLower()
+            .Contains(userId.ToLower()), trackChanges).Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+            .Take(requestParameters.PageSize).Include(t => t.Packages).Include(t => t.Traveler).ToListAsync();
+            int count = await FindByCondition(t => !t.IsDeleted && t.TravelerId.ToLower().Contains(userId.ToLower()), trackChanges)
+                .CountAsync();
+            return new PagedList<TravelPlan>(plans, count,requestParameters.PageNumber,requestParameters.PageSize);
         }
     }
 }

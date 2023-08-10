@@ -28,9 +28,9 @@ namespace DropMate.Shared.Dtos.Request
         public PackageWeight MaximumPackageWeight { get; init; }
 
 
-        //Calculate this automatically
-         
-        [Column(TypeName = "money")]
-        public decimal Price { get; set; }
+        //Package owner suggests a price
+
+        /*[Column(TypeName = "money")]
+        public decimal Price { get; set; }*/
     }
 }

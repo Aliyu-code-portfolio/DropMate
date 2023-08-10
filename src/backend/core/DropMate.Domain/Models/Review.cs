@@ -17,7 +17,7 @@ namespace DropMate.Domain.Models
         public string? Comment { get; set; }
 
         // Navigation properties
-        public Package Package { get; set; }
-        public User User { get; set; }
+        public virtual Package? Package { get; set; }
+        public virtual User? User { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace DropMate.Domain.Enums
     {
         Canceled,
         Pending,
+        Booked,
         Transit,
         Delivered
     }

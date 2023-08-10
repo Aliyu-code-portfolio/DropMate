@@ -16,7 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\core\LoggerService\LoggerService.csproj" />
     <ProjectReference Include="..\..\infrastructure\DropMate.Persistence\DropMate.Persistence.csproj" />
+    <ProjectReference Include="..\..\infrastructure\DropMate.Service\DropMate.Service.csproj" />
+    <ProjectReference Include="..\DropMate.ControllerEndPoints\DropMate.ControllerEndPoints.csproj" />
   </ItemGroup>
 
 </Project>

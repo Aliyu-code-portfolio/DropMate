@@ -1,15 +1,13 @@
 ﻿using AutoMapper;
 using DropMate.Application.Common;
 using DropMate.Application.ServiceContracts;
+using DropMate.Domain.Enums;
 using DropMate.Domain.Models;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.Exceptions.Sub;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 
 namespace DropMate.Service.Services
 {
@@ -26,6 +24,7 @@ namespace DropMate.Service.Services
         public async Task<StandardResponse<TravelPlanResponse>> CreateTravelPlan(TravelPlanRequestDto requestDto)
         {
             TravelPlan plan = _mapper.Map<TravelPlan>(requestDto);
+            plan.IsCompleted = Status.Pending;
             _unitOfWork.TravelPlanRepository.CreateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
             //check if there are unassigned packages in db and autopair 
@@ -44,18 +43,18 @@ namespace DropMate.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<StandardResponse<IEnumerable<TravelPlanResponse>>> GetAllTravelPlan(bool trackChanges)
+        public async Task<StandardResponse<(IEnumerable<TravelPlanResponse>,MetaData)>> GetAllTravelPlan(TravelPlanRequestParameters requestParameters, bool trackChanges)
         {
-            IEnumerable<TravelPlan> travelPlans =await _unitOfWork.TravelPlanRepository.GetAllTravelPlanAsync(trackChanges);
+            PagedList<TravelPlan> travelPlans =await _unitOfWork.TravelPlanRepository.GetAllTravelPlanAsync(requestParameters,trackChanges);
             IEnumerable<TravelPlanResponse> travelPlansDto = _mapper.Map<IEnumerable<TravelPlanResponse>>(travelPlans);
-            return new StandardResponse<IEnumerable<TravelPlanResponse>>(200,true, string.Empty,travelPlansDto);
+            return new StandardResponse<(IEnumerable<TravelPlanResponse>,MetaData)>(200,true, string.Empty,(travelPlansDto,travelPlans.MetaData));
         }
 
-        public async Task<StandardResponse<IEnumerable<TravelPlanResponse>>> GetAllUserTravelPlan(string userId, bool trackChanges)
+        public async Task<StandardResponse<(IEnumerable<TravelPlanResponse>, MetaData)>> GetAllUserTravelPlan(TravelPlanRequestParameters requestParameters, string userId, bool trackChanges)
         {
-            IEnumerable<TravelPlan> travelPlans = await _unitOfWork.TravelPlanRepository.GetAllUserTravelPlanAsync(userId, trackChanges);
+            PagedList<TravelPlan> travelPlans = await _unitOfWork.TravelPlanRepository.GetAllUserTravelPlanAsync(requestParameters,userId, trackChanges);
             IEnumerable<TravelPlanResponse> travelPlansDto = _mapper.Map<IEnumerable<TravelPlanResponse>>(travelPlans);
-            return new StandardResponse<IEnumerable<TravelPlanResponse>>(200, true, string.Empty, travelPlansDto);
+            return new StandardResponse<(IEnumerable<TravelPlanResponse>, MetaData)>(200, true, string.Empty, (travelPlansDto,travelPlans.MetaData));
         }
 
         public async Task<StandardResponse<TravelPlanResponse>> GetTravelPlanById(int id, bool trackChanges)
@@ -63,6 +62,22 @@ namespace DropMate.Service.Services
             TravelPlan travelPlan = await GetTravelPlanWithId(id, trackChanges);
             TravelPlanResponse travelPlanDto = _mapper.Map<TravelPlanResponse>(travelPlan);
             return new StandardResponse<TravelPlanResponse>(200,true, string.Empty,travelPlanDto);
+        }
+
+        public async Task UpdateCompleted(int plabId, Status status)
+        {
+            TravelPlan plan = await GetTravelPlanWithId(plabId, false);
+            plan.IsCompleted = status;
+            _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateIsActive(int plabId, bool isActive)
+        {
+            TravelPlan plan = await GetTravelPlanWithId(plabId, false);
+            plan.IsActive = isActive;
+            _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateTravelPlan(int id, TravelPlanRequestDto requestDto)

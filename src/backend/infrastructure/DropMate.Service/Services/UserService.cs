@@ -5,6 +5,8 @@ using DropMate.Domain.Models;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.Exceptions.Sub;
+using DropMate.Shared.RequestFeature;
+using DropMate.Shared.RequestFeature.Common;
 
 namespace DropMate.Service.Services
 {
@@ -35,11 +37,11 @@ namespace DropMate.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<StandardResponse<IEnumerable<UserResponseDto>>> GetAllUsers(bool trackChanges)
+        public async Task<StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>> GetAllUsers(UserRequestParameters requestParameter, bool trackChanges)
         {
-            IEnumerable<User> users = await _unitOfWork.UserRepository.GetAllUsersAsync(trackChanges);
-            IEnumerable<UserResponseDto> usersDto = _mapper.Map<IEnumerable<UserResponseDto>>(users);
-            return new StandardResponse<IEnumerable<UserResponseDto>>(200, true, string.Empty,usersDto);
+            PagedList<User> users = await _unitOfWork.UserRepository.GetAllUsersAsync(requestParameter, trackChanges);
+            IEnumerable<UserResponseDto> usersDto = _mapper.Map<IEnumerable<UserResponseDto>>(users.);
+            return new StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>(200, true, string.Empty,(usersDto,users.MetaData));
         }
 
         public async Task<StandardResponse<UserResponseDto>> GetUserByEmail(string email, bool trackChanges)
@@ -58,8 +60,9 @@ namespace DropMate.Service.Services
 
         public async Task UpdateUser(string id, UserUpdateRequestDto requestDto)
         {
-            _ = await GetUserWithId(id, false);
-            User user = _mapper.Map<User>(requestDto);
+            User user = await GetUserWithId(id, false);
+            user.Address = requestDto.Address;
+            user.PhoneNumber =requestDto.PhoneNumber;
             _unitOfWork.UserRepository.UpdateUser(user);
             await _unitOfWork.SaveAsync();
         }

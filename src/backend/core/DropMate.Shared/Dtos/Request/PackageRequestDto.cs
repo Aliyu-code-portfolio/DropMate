@@ -12,7 +12,6 @@ namespace DropMate.Shared.Dtos.Request
 {
     public record PackageRequestDto
     {
-        public int TravelPlanId { get; init; }
 
         //*Pull this info from the current logged in user
         [Required(ErrorMessage = "User ID is required")]
@@ -22,12 +21,13 @@ namespace DropMate.Shared.Dtos.Request
         [MaxLength(50, ErrorMessage = "Maximum length is 50")]
         public string DeliveryContactName { get; init; }
 
+        [Required(ErrorMessage = "Delivery contact number is required.")]
         [Phone(ErrorMessage = "Invalid phone number.")]
         public string DeliveryContactNumber { get; init; }
 
         //Save the image and save the url here
         [MaxLength(200, ErrorMessage = "Maximum length is 200")]
-        public string PackageImageUrl { get; init; }
+        public string? PackageImageUrl { get; init; }
 
         [Required(ErrorMessage = "Departure location is required.")]
         public LagosLocation DepartureLocation { get; init; }
