@@ -26,11 +26,9 @@ namespace DropMate.Domain.Models
         public bool IsActive { get; set; } = true;
         public Status IsCompleted { get; set; }
 
-        /*[Column(TypeName ="money")]
-        public decimal Price { get; set; }*/
-
         // Navigation property
         public virtual User? Traveler { get; set; }
         public virtual ICollection<Package>? Packages { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }

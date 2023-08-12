@@ -51,7 +51,6 @@ namespace DropMate.Domain.Models
         // Navigation properties
         public virtual TravelPlan? TravelPlan { get; set; }
         public virtual User? Owner { get; set; }
-        public virtual Review? Review { get; set; }
 
     }
 }

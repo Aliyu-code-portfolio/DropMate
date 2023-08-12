@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DropMate.Persistence.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230808110600_initialMigration")]
-    partial class initialMigration
+    [Migration("20230812152714_firstMig")]
+    partial class firstMig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace DropMate.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliverCode")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeliveryContactName")
                         .IsRequired()
@@ -69,7 +72,6 @@ namespace DropMate.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PackageImageUrl")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -80,10 +82,16 @@ namespace DropMate.Persistence.Migrations
                     b.Property<int>("PackageWeight")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("money");
+
+                    b.Property<int>("RecieveCode")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("TravelPlanId")
+                    b.Property<int?>("TravelPlanId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -104,7 +112,6 @@ namespace DropMate.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -122,10 +129,10 @@ namespace DropMate.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PackageId")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rate")
+                    b.Property<int>("TravelPlanId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -133,8 +140,7 @@ namespace DropMate.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PackageId")
-                        .IsUnique();
+                    b.HasIndex("TravelPlanId");
 
                     b.HasIndex("UserId");
 
@@ -164,6 +170,9 @@ namespace DropMate.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int>("IsCompleted")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -177,9 +186,6 @@ namespace DropMate.Persistence.Migrations
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("money");
 
                     b.Property<string>("TravelerId")
                         .IsRequired()
@@ -195,10 +201,10 @@ namespace DropMate.Persistence.Migrations
             modelBuilder.Entity("DropMate.Domain.Models.User", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -223,11 +229,9 @@ namespace DropMate.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePicURL")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -244,9 +248,7 @@ namespace DropMate.Persistence.Migrations
 
                     b.HasOne("DropMate.Domain.Models.TravelPlan", "TravelPlan")
                         .WithMany("Packages")
-                        .HasForeignKey("TravelPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TravelPlanId");
 
                     b.Navigation("Owner");
 
@@ -255,9 +257,9 @@ namespace DropMate.Persistence.Migrations
 
             modelBuilder.Entity("DropMate.Domain.Models.Review", b =>
                 {
-                    b.HasOne("DropMate.Domain.Models.Package", "Package")
-                        .WithOne("Review")
-                        .HasForeignKey("DropMate.Domain.Models.Review", "PackageId")
+                    b.HasOne("DropMate.Domain.Models.TravelPlan", "TravelPlan")
+                        .WithMany("Reviews")
+                        .HasForeignKey("TravelPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -265,7 +267,7 @@ namespace DropMate.Persistence.Migrations
                         .WithMany("Reviews")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Package");
+                    b.Navigation("TravelPlan");
 
                     b.Navigation("User");
                 });
@@ -281,15 +283,11 @@ namespace DropMate.Persistence.Migrations
                     b.Navigation("Traveler");
                 });
 
-            modelBuilder.Entity("DropMate.Domain.Models.Package", b =>
-                {
-                    b.Navigation("Review")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DropMate.Domain.Models.TravelPlan", b =>
                 {
                     b.Navigation("Packages");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("DropMate.Domain.Models.User", b =>

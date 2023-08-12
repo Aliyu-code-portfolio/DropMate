@@ -1,6 +1,7 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Persistence.Extensions;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ namespace DropMate.Persistence.Repositories
         {
             List<TravelPlan> plans = await FindAll(trackChanges).Where(t => !t.IsDeleted)
                 .Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
-                .Take(requestParameters.PageSize).Include(t => t.Packages)
+                .Take(requestParameters.PageSize).Sort(requestParameters.OrderBy).Include(t => t.Packages)
                 .Include(t => t.Traveler).ToListAsync();
             int count = await FindAll(trackChanges).Where(t => !t.IsDeleted).CountAsync();
             return new PagedList<TravelPlan>(plans, count, requestParameters.PageNumber, requestParameters.PageSize);
@@ -62,7 +63,8 @@ namespace DropMate.Persistence.Repositories
         {
             List<TravelPlan> plans = await FindByCondition(t => !t.IsDeleted && t.TravelerId.ToLower()
             .Contains(userId.ToLower()), trackChanges).Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
-            .Take(requestParameters.PageSize).Include(t => t.Packages).Include(t => t.Traveler).ToListAsync();
+            .Take(requestParameters.PageSize).Include(t => t.Packages).Sort(requestParameters.OrderBy)
+            .Include(t => t.Traveler).ToListAsync();
             int count = await FindByCondition(t => !t.IsDeleted && t.TravelerId.ToLower().Contains(userId.ToLower()), trackChanges)
                 .CountAsync();
             return new PagedList<TravelPlan>(plans, count,requestParameters.PageNumber,requestParameters.PageSize);

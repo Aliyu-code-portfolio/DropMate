@@ -12,7 +12,7 @@ namespace DropMate.Shared.Dtos.Response
     {
         public int Id { get; init; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-        public int PackageId { get; init; }
+        public int TravelPlanId { get; init; }
 
         public Rate Rate { get; init; }
 

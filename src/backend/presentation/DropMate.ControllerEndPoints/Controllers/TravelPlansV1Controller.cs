@@ -4,24 +4,27 @@ using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/travel-plans")]
     [ApiController]
-    public class TravelPlanController : ControllerBase
+    public class TravelPlanV1Controller : ControllerBase
     {
 
         private readonly IServiceManager _services;
 
-        public TravelPlanController(IServiceManager services)
+        public TravelPlanV1Controller(IServiceManager services)
         {
             _services = services;
         }
 
         [HttpGet]
+        [HttpHead]
         public async Task<IActionResult> GetAllTravelPlans([FromQuery] TravelPlanRequestParameters requestParameters)
         {
             StandardResponse<(IEnumerable<TravelPlanResponse> plans, MetaData metaData)> result = await _services.TravelPlanService
@@ -79,6 +82,12 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeleteTravelPlan(int id)
         {
             await _services.TravelPlanService.DeleteTravelPlan(id);
+            return Ok();
+        }
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT");
             return Ok();
         }
     }

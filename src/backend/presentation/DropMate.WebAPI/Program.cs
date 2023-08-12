@@ -10,6 +10,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.ConfigureUnitOfWork();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureActionFilter();
+builder.Services.ConfigureApiVersioning();
 
 
 builder.Services.AddControllers(config=>config.RespectBrowserAcceptHeader=true)

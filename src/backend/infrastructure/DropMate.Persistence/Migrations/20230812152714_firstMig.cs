@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DropMate.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class firstMig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,9 +19,9 @@ namespace DropMate.Persistence.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ProfilePicURL = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ProfilePicURL = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DateJoined = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -42,7 +42,7 @@ namespace DropMate.Persistence.Migrations
                     DepartureDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MaximumPackageWeight = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Price = table.Column<decimal>(type: "money", nullable: false),
+                    IsCompleted = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -65,15 +65,18 @@ namespace DropMate.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TravelPlanId = table.Column<int>(type: "int", nullable: false),
+                    TravelPlanId = table.Column<int>(type: "int", nullable: true),
                     PackageOwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DeliveryContactName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DeliveryContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PackageImageUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    PackageImageUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DepartureLocation = table.Column<int>(type: "int", nullable: false),
                     ArrivalLocation = table.Column<int>(type: "int", nullable: false),
                     DepartureDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PackageWeight = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
+                    RecieveCode = table.Column<int>(type: "int", nullable: false),
+                    DeliverCode = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -88,8 +91,7 @@ namespace DropMate.Persistence.Migrations
                         name: "FK_Packages_TravelPlans_TravelPlanId",
                         column: x => x.TravelPlanId,
                         principalTable: "TravelPlans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Packages_Users_OwnerId",
                         column: x => x.OwnerId,
@@ -103,9 +105,9 @@ namespace DropMate.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PackageId = table.Column<int>(type: "int", nullable: false),
+                    TravelPlanId = table.Column<int>(type: "int", nullable: false),
                     Rate = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -116,9 +118,9 @@ namespace DropMate.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Packages_PackageId",
-                        column: x => x.PackageId,
-                        principalTable: "Packages",
+                        name: "FK_Reviews_TravelPlans_TravelPlanId",
+                        column: x => x.TravelPlanId,
+                        principalTable: "TravelPlans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -139,10 +141,9 @@ namespace DropMate.Persistence.Migrations
                 column: "TravelPlanId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_PackageId",
+                name: "IX_Reviews_TravelPlanId",
                 table: "Reviews",
-                column: "PackageId",
-                unique: true);
+                column: "TravelPlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_UserId",
@@ -159,10 +160,10 @@ namespace DropMate.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "Packages");
 
             migrationBuilder.DropTable(
-                name: "Packages");
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "TravelPlans");

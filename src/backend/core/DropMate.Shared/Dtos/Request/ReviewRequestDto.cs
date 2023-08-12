@@ -10,8 +10,8 @@ namespace DropMate.Shared.Dtos.Request
 {
     public record ReviewRequestDto
     {
-        [Required(ErrorMessage = "Package ID is required")]
-        public int PackageId { get; init; }
+        [Required(ErrorMessage = "Travel Plan ID is required")]
+        public int TravelPlanId { get; init; }
 
         [Required(ErrorMessage = "Rate is required.")]
         public Rate Rate { get; init; }

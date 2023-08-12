@@ -3,6 +3,7 @@ using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,19 +14,21 @@ using System.Threading.Tasks;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/reviews")]
     [ApiController]
-    public class ReviewsController : ControllerBase
+    public class ReviewsV1Controller : ControllerBase
     {
 
         private readonly IServiceManager _services;
 
-        public ReviewsController(IServiceManager services)
+        public ReviewsV1Controller(IServiceManager services)
         {
             _services = services;
         }
 
         [HttpGet]
+        [HttpHead]
         public async Task<IActionResult> GetAllReviews([FromQuery]ReviewRequestParameters requestParameters)
         {
             StandardResponse<(IEnumerable<ReviewResponseDto> reviews,MetaData metaData)> result = await _services.ReviewService
@@ -52,6 +55,12 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeleteReview(int id)
         {
             await _services.ReviewService.DeleteReview(id);
+            return Ok();
+        }
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT");
             return Ok();
         }
     }

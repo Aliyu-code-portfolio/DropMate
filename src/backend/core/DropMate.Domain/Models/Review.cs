@@ -8,7 +8,8 @@ namespace DropMate.Domain.Models
     public class Review:BaseEntity
     {
         [Required(ErrorMessage ="Package ID is required")]
-        public int PackageId { get; set; }
+        [ForeignKey(nameof(TravelPlan))]
+        public int TravelPlanId { get; set; }
 
         [Required(ErrorMessage = "Rate is required.")]
         public Rate Rate { get; set; }
@@ -17,7 +18,7 @@ namespace DropMate.Domain.Models
         public string? Comment { get; set; }
 
         // Navigation properties
-        public virtual Package? Package { get; set; }
+        public virtual TravelPlan? TravelPlan { get; set; }
         public virtual User? User { get; set; }
     }
 }

@@ -4,24 +4,27 @@ using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/users")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersV1Controller : ControllerBase
     {
 
         private readonly IServiceManager _services;
 
-        public UsersController(IServiceManager services)
+        public UsersV1Controller(IServiceManager services)
         {
             _services = services;
         }
 
         [HttpGet]
+        [HttpHead]
         public async Task<IActionResult> GetAllUsers([FromQuery] UserRequestParameters requestParameter)
         {
             StandardResponse<(IEnumerable<UserResponseDto> users,MetaData metaData)> result = await _services.UserService.GetAllUsers(requestParameter,false);
@@ -64,6 +67,12 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeleteUser(string id)
         {
             await _services.UserService.DeleteUser(id, false);
+            return Ok();
+        }
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT");
             return Ok();
         }
     }

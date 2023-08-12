@@ -126,10 +126,10 @@ namespace DropMate.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PackageId")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rate")
+                    b.Property<int>("TravelPlanId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -137,8 +137,7 @@ namespace DropMate.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PackageId")
-                        .IsUnique();
+                    b.HasIndex("TravelPlanId");
 
                     b.HasIndex("UserId");
 
@@ -255,9 +254,9 @@ namespace DropMate.Persistence.Migrations
 
             modelBuilder.Entity("DropMate.Domain.Models.Review", b =>
                 {
-                    b.HasOne("DropMate.Domain.Models.Package", "Package")
-                        .WithOne("Review")
-                        .HasForeignKey("DropMate.Domain.Models.Review", "PackageId")
+                    b.HasOne("DropMate.Domain.Models.TravelPlan", "TravelPlan")
+                        .WithMany("Reviews")
+                        .HasForeignKey("TravelPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -265,7 +264,7 @@ namespace DropMate.Persistence.Migrations
                         .WithMany("Reviews")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Package");
+                    b.Navigation("TravelPlan");
 
                     b.Navigation("User");
                 });
@@ -281,14 +280,11 @@ namespace DropMate.Persistence.Migrations
                     b.Navigation("Traveler");
                 });
 
-            modelBuilder.Entity("DropMate.Domain.Models.Package", b =>
-                {
-                    b.Navigation("Review");
-                });
-
             modelBuilder.Entity("DropMate.Domain.Models.TravelPlan", b =>
                 {
                     b.Navigation("Packages");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("DropMate.Domain.Models.User", b =>

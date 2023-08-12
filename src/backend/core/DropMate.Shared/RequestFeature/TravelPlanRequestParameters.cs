@@ -9,5 +9,9 @@ namespace DropMate.Shared.RequestFeature
 {
     public class TravelPlanRequestParameters : RequestParameters
     {
+        public TravelPlanRequestParameters()
+        {
+            OrderBy = " ";
+        }
     }
 }

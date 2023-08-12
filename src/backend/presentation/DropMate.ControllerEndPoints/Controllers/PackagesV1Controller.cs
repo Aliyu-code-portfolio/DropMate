@@ -4,24 +4,27 @@ using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/packages")]
     [ApiController]
-    public class PackagesController : ControllerBase
+    public class PackagesV1Controller : ControllerBase
     {
 
         private readonly IServiceManager _services;
 
-        public PackagesController(IServiceManager services)
+        public PackagesV1Controller(IServiceManager services)
         {
             _services = services;
         }
 
         [HttpGet]
+        [HttpHead]
         public async Task<IActionResult> GetAllPackages([FromQuery]PackageRequestParameter requestParameter)
         {
             StandardResponse<(IEnumerable<PackageResponseDto> packages, MetaData metaData)> result = await _services.PackageService
@@ -87,6 +90,12 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeletePackage(int id)
         {
             await _services.PackageService.DeletePackage(id);
+            return Ok();
+        }
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT");
             return Ok();
         }
 

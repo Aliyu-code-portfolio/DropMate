@@ -9,6 +9,10 @@ namespace DropMate.Shared.RequestFeature
 {
     public class ReviewRequestParameters:RequestParameters
     {
+        public ReviewRequestParameters()
+        {
+            OrderBy = " ";
+        }
         public uint MinRating { get; set; } = 1;
         public uint MaxRating { get; set; } = 5;
         public bool IsValidRating => MaxRating >= MinRating;

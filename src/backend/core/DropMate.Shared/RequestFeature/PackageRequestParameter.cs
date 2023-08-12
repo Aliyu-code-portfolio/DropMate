@@ -9,5 +9,9 @@ namespace DropMate.Shared.RequestFeature
 {
     public class PackageRequestParameter:RequestParameters
     {
+        public PackageRequestParameter()
+        {
+            OrderBy = " ";
+        }
     }
 }

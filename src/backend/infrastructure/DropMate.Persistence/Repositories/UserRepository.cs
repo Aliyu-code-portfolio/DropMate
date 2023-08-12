@@ -1,6 +1,7 @@
 ﻿using DropMate.Application.Contracts;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
+using DropMate.Persistence.Extensions;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ namespace DropMate.Persistence.Repositories
             List<User> users = await FindAll(trackChanges).Where(u=> !u.IsDeleted 
             && u.DateJoined>=requestParameters.MinJoinDate && u.DateJoined<=requestParameters.MaxJoinDate)
                 .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
+                .Sort(requestParameters.OrderBy)
                 .Include(u=>u.TravelPlans).Include(u=>u.Packages).ToListAsync();
             int count = await FindAll(trackChanges).Where(u => !u.IsDeleted && u.DateJoined >= requestParameters.MinJoinDate 
             && u.DateJoined <= requestParameters.MaxJoinDate).CountAsync();

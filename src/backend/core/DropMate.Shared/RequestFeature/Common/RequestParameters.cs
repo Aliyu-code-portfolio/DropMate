@@ -9,7 +9,7 @@ namespace DropMate.Shared.RequestFeature.Common
     public abstract class RequestParameters
     {
         const int MaxPageSize = 20;
-        private int pageSize;
+        private int pageSize=2;
 
         public int PageSize
         {
@@ -18,6 +18,6 @@ namespace DropMate.Shared.RequestFeature.Common
         }
 
         public int PageNumber { get; set; } = 1;
-
+        public string? OrderBy { get; set; }
     }
 }
