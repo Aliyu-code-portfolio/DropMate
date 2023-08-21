@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="ServiceContracts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DropMate2.Domain\DropMate2.Domain.csproj" />
+    <ProjectReference Include="..\DropMate2.Shared\DropMate2.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

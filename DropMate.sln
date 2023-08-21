@@ -25,11 +25,33 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Shared", "src\back
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.WebAPI", "src\backend\presentation\DropMate.WebAPI\DropMate.WebAPI.csproj", "{CC04C5D2-564B-4B97-809A-BD9ADA6DA290}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.Service", "src\backend\infrastructure\DropMate.Service\DropMate.Service.csproj", "{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.Service", "src\backend\infrastructure\DropMate.Service\DropMate.Service.csproj", "{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "src\backend\core\LoggerService\LoggerService.csproj", "{920DF0B3-10D3-49C9-934A-97CC34538A51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "src\backend\core\LoggerService\LoggerService.csproj", "{920DF0B3-10D3-49C9-934A-97CC34538A51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate.ControllerEndPoints", "src\backend\presentation\DropMate.ControllerEndPoints\DropMate.ControllerEndPoints.csproj", "{20385B91-B773-4ABB-ADD3-D6663D397F02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropMate.ControllerEndPoints", "src\backend\presentation\DropMate.ControllerEndPoints\DropMate.ControllerEndPoints.csproj", "{20385B91-B773-4ABB-ADD3-D6663D397F02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{D5D58376-8688-4654-B5EE-357709F9170E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.Domain", "src\backend2\core\DropMate2.Domain\DropMate2.Domain.csproj", "{B81EF4CF-E810-4FCD-8F50-9B1B918F421D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.Application", "src\backend2\core\DropMate2.Application\DropMate2.Application.csproj", "{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.LoggerService", "src\backend2\core\DropMate2.LoggerService\DropMate2.LoggerService.csproj", "{1F644747-E2D9-4295-B1E2-2BE5528D1828}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{25995112-7DA7-4A89-A147-92FB34B84345}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.Persistence", "src\backend2\infrastructure\DropMate2.Persistence\DropMate2.Persistence.csproj", "{6881E4EE-AF07-42C5-8E3D-F98FB1923370}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.Service", "src\backend2\infrastructure\DropMate2.Service\DropMate2.Service.csproj", "{4CF42E22-9FE5-4EDE-AA62-9FC214095129}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "presentation", "presentation", "{AE1C41F1-B83F-4A3E-9D83-E0FCF5D9E52C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.ControllerEndPoints", "src\backend2\presentation\DropMate2.ControllerEndPoints\DropMate2.ControllerEndPoints.csproj", "{63D99323-D160-4D12-AF1E-B49920EBB75F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.WebAPI", "src\backend2\presentation\DropMate2.WebAPI\DropMate2.WebAPI.csproj", "{26B932CE-D230-4F27-B2C5-65344D15E4AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropMate2.Shared", "src\backend2\core\DropMate2.Shared\DropMate2.Shared.csproj", "{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +91,38 @@ Global
 		{20385B91-B773-4ABB-ADD3-D6663D397F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20385B91-B773-4ABB-ADD3-D6663D397F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20385B91-B773-4ABB-ADD3-D6663D397F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B81EF4CF-E810-4FCD-8F50-9B1B918F421D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B81EF4CF-E810-4FCD-8F50-9B1B918F421D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B81EF4CF-E810-4FCD-8F50-9B1B918F421D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B81EF4CF-E810-4FCD-8F50-9B1B918F421D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F644747-E2D9-4295-B1E2-2BE5528D1828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F644747-E2D9-4295-B1E2-2BE5528D1828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F644747-E2D9-4295-B1E2-2BE5528D1828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F644747-E2D9-4295-B1E2-2BE5528D1828}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6881E4EE-AF07-42C5-8E3D-F98FB1923370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6881E4EE-AF07-42C5-8E3D-F98FB1923370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6881E4EE-AF07-42C5-8E3D-F98FB1923370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6881E4EE-AF07-42C5-8E3D-F98FB1923370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CF42E22-9FE5-4EDE-AA62-9FC214095129}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF42E22-9FE5-4EDE-AA62-9FC214095129}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF42E22-9FE5-4EDE-AA62-9FC214095129}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF42E22-9FE5-4EDE-AA62-9FC214095129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D99323-D160-4D12-AF1E-B49920EBB75F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D99323-D160-4D12-AF1E-B49920EBB75F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D99323-D160-4D12-AF1E-B49920EBB75F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D99323-D160-4D12-AF1E-B49920EBB75F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26B932CE-D230-4F27-B2C5-65344D15E4AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26B932CE-D230-4F27-B2C5-65344D15E4AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26B932CE-D230-4F27-B2C5-65344D15E4AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26B932CE-D230-4F27-B2C5-65344D15E4AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +141,17 @@ Global
 		{FEA8AC79-9ED7-4C42-81D5-DA57080E9E2D} = {8EFB5EAE-0C72-4024-8A21-F8F18982B667}
 		{920DF0B3-10D3-49C9-934A-97CC34538A51} = {C56677DD-D250-4A66-B0AF-6B79433CE804}
 		{20385B91-B773-4ABB-ADD3-D6663D397F02} = {18B601EE-E498-4664-B9F6-D2D9F8E7E5BF}
+		{D5D58376-8688-4654-B5EE-357709F9170E} = {6F27EDD0-7074-4003-9BE2-414B32F62EA9}
+		{B81EF4CF-E810-4FCD-8F50-9B1B918F421D} = {D5D58376-8688-4654-B5EE-357709F9170E}
+		{6DE86513-9FBC-49AD-9BCD-B7AD915EBDC0} = {D5D58376-8688-4654-B5EE-357709F9170E}
+		{1F644747-E2D9-4295-B1E2-2BE5528D1828} = {D5D58376-8688-4654-B5EE-357709F9170E}
+		{25995112-7DA7-4A89-A147-92FB34B84345} = {6F27EDD0-7074-4003-9BE2-414B32F62EA9}
+		{6881E4EE-AF07-42C5-8E3D-F98FB1923370} = {25995112-7DA7-4A89-A147-92FB34B84345}
+		{4CF42E22-9FE5-4EDE-AA62-9FC214095129} = {25995112-7DA7-4A89-A147-92FB34B84345}
+		{AE1C41F1-B83F-4A3E-9D83-E0FCF5D9E52C} = {6F27EDD0-7074-4003-9BE2-414B32F62EA9}
+		{63D99323-D160-4D12-AF1E-B49920EBB75F} = {AE1C41F1-B83F-4A3E-9D83-E0FCF5D9E52C}
+		{26B932CE-D230-4F27-B2C5-65344D15E4AF} = {AE1C41F1-B83F-4A3E-9D83-E0FCF5D9E52C}
+		{6E46C1AC-52FD-4E05-86F0-1055EFAB9BB3} = {D5D58376-8688-4654-B5EE-357709F9170E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5CCC6B3D-D108-42C1-929C-F054BA81E4A8}
