@@ -1,11 +1,15 @@
-﻿using DropMate2.Domain.Common;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace DropMate2.Domain.Models
+namespace DropMate2.Shared.Dtos.Request
 {
-    public class Transaction:BaseEntity
+    public class TransactionRequestDto
     {
-        [Required(ErrorMessage ="Amount is required")]
+        [Required(ErrorMessage = "Amount is required")]
         public decimal PaymentAmount { get; set; }
         [Required(ErrorMessage = "Receiver wallet id is required")]
         public string RecieverWalletID { get; set; }

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DropMate2.WebAPI\DropMate2.WebAPI.csproj" />
+  </ItemGroup>
+
 </Project>
