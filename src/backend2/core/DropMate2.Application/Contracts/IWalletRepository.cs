@@ -7,7 +7,7 @@ namespace DropMate2.Application.Contracts
     public interface IWalletRepository
     {
         Task<PagedList<Wallet>> GetAllWalletsAsync(WalletRequestParameter requestParameter, bool trackChanges);
-        Task<Wallet> GetWalletByIdAsync(int id, bool trackChanges);
+        Task<Wallet> GetWalletByIdAsync(string id, bool trackChanges);
         void UpdateWallet(Wallet wallet);
         void DeleteWallet(Wallet wallet);
         void PermanentWalletPackage(Wallet wallet);

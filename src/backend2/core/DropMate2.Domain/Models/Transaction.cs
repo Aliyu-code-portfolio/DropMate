@@ -11,7 +11,8 @@ namespace DropMate2.Domain.Models
         public string RecieverWalletID { get; set; }
         [Required(ErrorMessage = "Sender wallet id is required")]
         public string SenderWalletID { get; set; }
-        public int? TravelPlanId { get; set; }
-        public int? PackageId { get; set; }
+        public bool IsCompleted { get; set; }
+        public int TravelPlanId { get; set; }
+        public int PackageId { get; set; }
     }
 }

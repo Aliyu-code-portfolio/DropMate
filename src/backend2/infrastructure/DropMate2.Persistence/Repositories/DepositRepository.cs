@@ -25,7 +25,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<PagedList<Deposit>> GetAllDepositsAsync(DepositRequestParameter requestParameter, bool trackChanges)
         {
-            List<Deposit> result = await FindAll(trackChanges)
+            List<Deposit> result = await FindAll(trackChanges).Where(d=>d.IsDeleted)
                 .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
             int count = await FindAll(trackChanges).CountAsync();
@@ -34,7 +34,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<PagedList<Deposit>> GetAllWalletDepositsAsync(DepositRequestParameter requestParameter, string walletId, bool trackChanges)
         {
-            List<Deposit> result = await FindByCondition(d=>d.WalletId.Equals(walletId), trackChanges)
+            List<Deposit> result = await FindByCondition(d=>d.WalletId.Equals(walletId) && !d.IsDeleted, trackChanges)
                 .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
             int count = await FindByCondition(d => d.WalletId.Equals(walletId), trackChanges).CountAsync();
@@ -43,7 +43,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<Deposit> GetDepositeByIdAsync(int id, bool trackChanges)
         {
-           return await FindByCondition(d => d.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
+           return await FindByCondition(d => d.Id.Equals(id) && !d.IsDeleted, trackChanges).FirstOrDefaultAsync();
         }
 
         public void PermanentDeleteDeposit(Deposit deposit)

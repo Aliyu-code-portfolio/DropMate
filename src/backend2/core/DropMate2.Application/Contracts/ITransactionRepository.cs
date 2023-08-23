@@ -14,6 +14,7 @@ namespace DropMate2.Application.Contracts
         Task<PagedList<Transaction>> GetAllTransactionsAsync(TransactionRequestParameters requestParameter, bool trackChanges);
         Task<PagedList<Transaction>> GetAllUserTransactionsAsync(TransactionRequestParameters requestParameter, string userId, bool trackChanges);
         Task<Transaction> GetTransactionByIdAsync(int id, bool trackChanges);
+        Task<Transaction> GetTransactionByPackageIdAsync(int packageId, bool trackChanges);
         void UpdateTransaction(Transaction transaction);
         void DeleteTransaction(Transaction transaction);
         void PermanentDeleteTransaction(Transaction transaction);

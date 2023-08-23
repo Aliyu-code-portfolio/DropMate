@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ServiceContracts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DropMate2.Domain\DropMate2.Domain.csproj" />
     <ProjectReference Include="..\DropMate2.Shared\DropMate2.Shared.csproj" />
   </ItemGroup>

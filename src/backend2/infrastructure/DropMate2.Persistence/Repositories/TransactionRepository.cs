@@ -25,7 +25,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<PagedList<Transaction>> GetAllTransactionsAsync(TransactionRequestParameters requestParameter, bool trackChanges)
         {
-            List<Transaction> result = await FindAll(trackChanges)
+            List<Transaction> result = await FindAll(trackChanges).Where(t=>!t.IsDeleted)
                 .Skip((requestParameter.PageNumber-1)*requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
             int count = await FindAll(trackChanges).CountAsync();
@@ -35,7 +35,7 @@ namespace DropMate2.Persistence.Repositories
         public async Task<PagedList<Transaction>> GetAllUserTransactionsAsync(TransactionRequestParameters requestParameter, string userId, bool trackChanges)
         {
             List<Transaction> result = await FindByCondition(t=>t.SenderWalletID.Equals(userId)
-            ||t.RecieverWalletID.Equals(userId), trackChanges)
+            ||t.RecieverWalletID.Equals(userId), trackChanges).Where(t => !t.IsDeleted)
                 .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
             int count = await FindByCondition(t => t.SenderWalletID.Equals(userId)
@@ -45,7 +45,12 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<Transaction> GetTransactionByIdAsync(int id, bool trackChanges)
         {
-            return await FindByCondition(t => t.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
+            return await FindByCondition(t => t.Id.Equals(id) && !t.IsDeleted, trackChanges).FirstOrDefaultAsync();
+        }
+
+        public async Task<Transaction> GetTransactionByPackageIdAsync(int packageId, bool trackChanges)
+        {
+            return await FindByCondition(t => t.PackageId.Equals(packageId) && !t.IsDeleted, trackChanges).FirstOrDefaultAsync();
         }
 
         public void PermanentDeleteMultiTransactions(IEnumerable<Transaction> transactions)

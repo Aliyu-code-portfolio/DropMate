@@ -25,7 +25,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<PagedList<Wallet>> GetAllWalletsAsync(WalletRequestParameter requestParameter, bool trackChanges)
         {
-            List<Wallet> result = await FindAll(trackChanges)
+            List<Wallet> result = await FindAll(trackChanges).Where(w=>!w.IsDeleted)
                 .Skip((requestParameter.PageNumber-1)*requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
 
@@ -34,9 +34,9 @@ namespace DropMate2.Persistence.Repositories
             return new PagedList<Wallet>(result, count,requestParameter.PageNumber,requestParameter.PageSize);
         }
 
-        public async Task<Wallet> GetWalletByIdAsync(int id, bool trackChanges)
+        public async Task<Wallet> GetWalletByIdAsync(string id, bool trackChanges)
         {
-            return await FindByCondition(w => w.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
+            return await FindByCondition(w => w.Id.Equals(id) && !w.IsDeleted, trackChanges).FirstOrDefaultAsync();
         }
 
         public void PermanentDeleteMultiWallets(IEnumerable<Wallet> wallets)

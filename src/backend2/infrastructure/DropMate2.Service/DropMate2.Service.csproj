@@ -8,7 +8,14 @@
 
   <ItemGroup>
     <Folder Include="Manager\" />
-    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\DropMate2.Application\DropMate2.Application.csproj" />
   </ItemGroup>
 
 </Project>
