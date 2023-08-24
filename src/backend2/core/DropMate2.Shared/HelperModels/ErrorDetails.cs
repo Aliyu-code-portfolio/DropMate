@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace DropMate2.Shared.ErrorModels
+namespace DropMate2.Shared.HelperModels
 {
     public class ErrorDetails
     {

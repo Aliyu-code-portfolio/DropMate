@@ -15,7 +15,9 @@ namespace DropMate2.Shared.Dtos.Request
         public string RecieverWalletID { get; set; }
         [Required(ErrorMessage = "Sender wallet id is required")]
         public string SenderWalletID { get; set; }
+        [Required(ErrorMessage = "Travel plan id is required")]
         public int TravelPlanId { get; set; }
+        [Required(ErrorMessage = "Package id is required")]
         public int PackageId { get; set; }
     }
 }

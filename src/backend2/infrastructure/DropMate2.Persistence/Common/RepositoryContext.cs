@@ -16,5 +16,6 @@ namespace DropMate2.Persistence.Common
         DbSet<Wallet> Wallets { get; set; }
         DbSet<Deposit> Deposits { get; set; }
         DbSet<Transaction> Transactions { get; set; }
+        DbSet<InitializedPayment> InitializedPayments { get; set; }
     }
 }

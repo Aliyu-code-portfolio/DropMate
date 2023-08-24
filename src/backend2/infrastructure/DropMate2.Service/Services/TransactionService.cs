@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DropMate.Application.Common;
+using DropMate2.Application.Common;
 using DropMate2.Application.ServiceContracts;
 using DropMate2.Domain.Models;
 using DropMate2.Shared.Dtos.Request;
@@ -76,7 +76,7 @@ namespace DropMate2.Service.Services
                 .GetAllTransactionsAsync(requestParameters, trackChanges);
             IEnumerable<TransactionResponseDto> responseDtos = _mapper.Map<IEnumerable<TransactionResponseDto>>(transactions);
             return StandardResponse<(IEnumerable<TransactionResponseDto> transactions, MetaData metaData)>
-                .Success("Success",(responseDtos,transactions.MetaData));
+                .Success("Successfully retrieved transactions",(responseDtos,transactions.MetaData));
         }
 
         public async Task<StandardResponse<(IEnumerable<TransactionResponseDto> transactions, MetaData metaData)>> GetAllUserTransaction(TransactionRequestParameters requestParameters, string userId, bool trackChanges)
@@ -85,14 +85,14 @@ namespace DropMate2.Service.Services
                 .GetAllUserTransactionsAsync(requestParameters,userId, trackChanges);
             IEnumerable<TransactionResponseDto> responseDtos = _mapper.Map<IEnumerable<TransactionResponseDto>>(transactions);
             return StandardResponse<(IEnumerable<TransactionResponseDto> transactions, MetaData metaData)>
-                .Success("Success", (responseDtos, transactions.MetaData));
+                .Success("Successfully retrieved transactions", (responseDtos, transactions.MetaData));
         }
 
         public async Task<StandardResponse<TransactionResponseDto>> GetTransactionById(int id, bool trackChanges)
         {
             Transaction transaction = await GetTransactionWithId(id, trackChanges);
             TransactionResponseDto responseDto = _mapper.Map<TransactionResponseDto>(transaction);
-            return StandardResponse<TransactionResponseDto>.Success("Success", responseDto);
+            return StandardResponse<TransactionResponseDto>.Success("Successfully retrieved transaction", responseDto);
         }
 
         public async Task UpdateTransaction(int id, TransactionRequestDto transactionDto)

@@ -1,4 +1,3 @@
-using DropMate.Application.Common;
 using DropMate2.Application.Common;
 using DropMate2.LoggerService;
 using DropMate2.Persistence.Common;
@@ -7,10 +6,11 @@ using DropMate2.WebAPI.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//DbContxt
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
-//ServiceManager
+builder.Services.ConfigureDbContext(builder.Configuration);
+builder.Services.ConfigureUnitOfWork();
+builder.Services.ConfigureLoggerManager();
+builder.Services.ConfigureServiceManager();
+builder.Services.ConfigurePayStackHelper();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers(config => config.RespectBrowserAcceptHeader = true)
