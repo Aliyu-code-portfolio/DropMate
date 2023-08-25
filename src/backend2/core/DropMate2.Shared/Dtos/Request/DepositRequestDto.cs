@@ -15,7 +15,7 @@ namespace DropMate2.Shared.Dtos.Request
         [EmailAddress(ErrorMessage ="Email is invalid")]
         [Required(ErrorMessage ="Email address is required")]
         public string Email { get; set; }
-
+        [Range(50,double.MaxValue)]
         public decimal Amount { get; set; }
 
     }

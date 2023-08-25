@@ -25,7 +25,7 @@ namespace DropMate2.Persistence.Repositories
 
         public async Task<PagedList<Deposit>> GetAllDepositsAsync(DepositRequestParameter requestParameter, bool trackChanges)
         {
-            List<Deposit> result = await FindAll(trackChanges).Where(d=>d.IsDeleted)
+            List<Deposit> result = await FindAll(trackChanges).Where(d=>!d.IsDeleted)
                 .Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
                 .Take(requestParameter.PageSize).ToListAsync();
             int count = await FindAll(trackChanges).CountAsync();

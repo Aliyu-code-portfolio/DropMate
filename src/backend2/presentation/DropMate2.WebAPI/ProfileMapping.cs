@@ -11,7 +11,9 @@ namespace DropMate2.WebAPI
         {
             CreateMap<Transaction, TransactionResponseDto>();
             CreateMap<TransactionRequestDto, Transaction>();
-
+            CreateMap<WalletRequestDto, Wallet>();
+            CreateMap<Wallet, WalletResponseDto>();
+            CreateMap<Deposit, DepositResponseDto>();
         }
     }
 }

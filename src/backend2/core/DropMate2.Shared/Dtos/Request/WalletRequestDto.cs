@@ -12,7 +12,5 @@ namespace DropMate2.Shared.Dtos.Request
     {
         [Required(ErrorMessage ="The wallet id is required")]
         public string Id { get; set; }
-        [Required(ErrorMessage = "The balance is required")]
-        public decimal Balance { get; set; }
     }
 }

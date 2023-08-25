@@ -10,6 +10,9 @@ namespace DropMate2.Shared.Dtos.Response
 {
     public class DepositResponseDto
     {
+        public int Id { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string Reference { get; set; }
         public string WalletId { get; set; }
 
         public decimal Amount { get; set; }

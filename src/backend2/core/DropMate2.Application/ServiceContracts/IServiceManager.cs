@@ -8,9 +8,9 @@ namespace DropMate2.Application.ServiceContracts
 {
     public interface IServiceManager
     {
-        IWalletService IWalletService { get; }
+        IWalletService WalletService { get; }
         ITransactionService TransactionService { get; }
-        IDepositService IDepositService { get; }
+        IDepositService DepositService { get; }
 
     }
 }

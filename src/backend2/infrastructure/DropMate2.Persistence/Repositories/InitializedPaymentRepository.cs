@@ -21,14 +21,20 @@ namespace DropMate2.Persistence.Repositories
             Add(payment);
         }
 
-        public async Task<InitializedPayment> GetInitializedPaymentById(int id, bool trackChanges)
+        public void DeleteInitializedPayment(InitializedPayment payment)
         {
-            return await FindByCondition(i => i.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
+            Delete(payment);
+        }
+
+        public async Task<InitializedPayment> GetInitializedPaymentById(string id, bool trackChanges)
+        {
+            return await FindByCondition(i => i.Id.Equals(id) &&!i.IsDeleted , trackChanges).FirstOrDefaultAsync();
         }
 
         public async Task<InitializedPayment> GetInitializedPaymentByRef(string referenceNumber, bool trackChanges)
         {
-            return await FindByCondition(i => i.Reference.Equals(referenceNumber), trackChanges).FirstOrDefaultAsync();
+            return await FindByCondition(i => i.Reference
+            .Equals(referenceNumber) && !i.IsDeleted, trackChanges).FirstOrDefaultAsync();
         }
     }
 }

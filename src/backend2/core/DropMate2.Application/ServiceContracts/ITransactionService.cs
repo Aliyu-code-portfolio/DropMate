@@ -10,7 +10,7 @@ namespace DropMate2.Application.ServiceContracts
         Task<StandardResponse<(IEnumerable<TransactionResponseDto> transactions, MetaData metaData)>> GetAllTransaction(TransactionRequestParameters requestParameters, bool trackChanges);
         Task<StandardResponse<(IEnumerable<TransactionResponseDto> transactions, MetaData metaData)>> GetAllUserTransaction(TransactionRequestParameters requestParameters,string userId, bool trackChanges);
         Task<StandardResponse<TransactionResponseDto>> GetTransactionById(int id, bool trackChanges);
-        Task CreateTransaction(TransactionRequestDto transaction);
+        Task<StandardResponse<TransactionResponseDto>> CreateTransaction(TransactionRequestDto transaction);
         Task CompleteTransaction(int packageId, bool isCompleted);
         Task DeleteTransaction(int id);
         Task UpdateTransaction(int id, TransactionRequestDto transaction);

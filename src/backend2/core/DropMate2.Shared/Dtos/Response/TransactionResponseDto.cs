@@ -11,6 +11,7 @@ namespace DropMate2.Shared.Dtos.Response
     {
         public int Id { get; set; }
         public decimal PaymentAmount { get; set; }
+        public bool IsCompleted { get; set; }
         public string RecieverWalletID { get; set; }
         public string SenderWalletID { get; set; }
         public int? TravelPlanId { get; set; }

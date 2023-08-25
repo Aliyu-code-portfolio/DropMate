@@ -58,14 +58,17 @@ namespace DropMate2.Service.Services
             return StandardResponse<DepositResponseDto>.Success("Successfully retrieved deposit", responseDto);
         }
         //PayStack inplementations
-        public async Task<StandardResponse<InitializePaymentResponseDto>> InitializeDeposit(DepositRequestDto depositRequest)
+        public async Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto depositRequest)
         {
+            _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(depositRequest.WalletId, false)
+                ?? throw new WalletNotFoundException(depositRequest.WalletId);
+            string initPayId = Guid.NewGuid().ToString();
             InitializePaymentResponseDto initializePaymentResponse;
-            InitializePaymentRequestDto initializePaymentRequest = new() 
+            InitializePaymentRequestDto initializePaymentRequest = new()
             {
-                Email = depositRequest.Email,
-                Amount = depositRequest.Amount,
-                Callback_url = "https://bit.ly/paystack1123"//use this endpoint to call your endpoint to verify the payment made
+                email = depositRequest.Email,
+                amount = depositRequest.Amount.ToString()+"00",
+                callback_url = "https://bit.ly/paystack1123"//use this endpoint to call your endpoint /deposits/confirm/{initPayId}  to verify the payment made
             };
             var serializedDto = JsonSerializer.Serialize(initializePaymentRequest);
             var httpContent = new StringContent(serializedDto, Encoding.UTF8,"application/json");
@@ -75,29 +78,49 @@ namespace DropMate2.Service.Services
                 if(response.IsSuccessStatusCode)
                 {
                     initializePaymentResponse = await response.Content.ReadAsAsync<InitializePaymentResponseDto>();
+                    initializePaymentResponse.data.status = "Active";
+                    initializePaymentResponse.data.id = initPayId;
                 }
                 else
                 {
-                    throw new PaymentFailedException(response.ReasonPhrase);
+                        throw new PaymentFailedException(response.ReasonPhrase);
                 }
             }
             InitializedPayment initializedPayment = new()
             {
+                Id = initPayId,
                 WalletId = depositRequest.WalletId,
-                Authorization_url = initializePaymentResponse.Authorization_url,
+                Authorization_url = initializePaymentResponse.data.authorization_url,
                 Amount = depositRequest.Amount,
-                Reference = initializePaymentResponse.Reference
+                Access_code = initializePaymentResponse.data.access_code,
+                Reference = initializePaymentResponse.data.reference
             };
             _unitOfWork.InitializedPaymentRepository.CreateInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
-            return StandardResponse<InitializePaymentResponseDto>
-                .Success("Successfully initialized a payment... Continue to check out", initializePaymentResponse);
+            return StandardResponse<Data>
+                .Success("Successfully initialized a payment... Continue to check out using url provided", initializePaymentResponse.data);
         }
-        public async Task CompleteDeposit(string referenceCode)
+        public async Task CompleteDeposit(string paymentId)
         {
             InitializedPayment initializedPayment =await _unitOfWork.InitializedPaymentRepository
-                .GetInitializedPaymentByRef(referenceCode, false)
-                ?? throw new DepositBadRequestException(referenceCode);
+                .GetInitializedPaymentById(paymentId, false)
+                ?? throw new DepositBadRequestException(paymentId);
+            InitializePaymentResponseDto initializePaymentResponse;
+            using (HttpResponseMessage responseMessage =await PayStackHelper.ApiClient.GetAsync($"transaction/verify/{initializedPayment.Reference}"))
+            {
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    initializePaymentResponse = await responseMessage.Content.ReadAsAsync<InitializePaymentResponseDto>();
+                    if (initializePaymentResponse.data.status != "success")
+                    {
+                        throw new PaymentNotMadeExceptioin(initializedPayment.Reference);
+                    }
+                }
+                else
+                {
+                    throw new PaymentNotMadeExceptioin();
+                }
+            }
             Wallet creditWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(initializedPayment.WalletId,false)
                 ?? throw new WalletNotFoundException(initializedPayment.WalletId);
             creditWallet.Balance += initializedPayment.Amount;
@@ -109,6 +132,7 @@ namespace DropMate2.Service.Services
             };
             _unitOfWork.DepositRepository.CreateDeposit(deposit);
             _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
+            _unitOfWork.InitializedPaymentRepository.DeleteInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
         }
         private async Task<Deposit> GetDepositWithId(int id, bool trackChanges)

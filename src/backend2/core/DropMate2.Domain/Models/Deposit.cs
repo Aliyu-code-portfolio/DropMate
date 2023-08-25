@@ -9,7 +9,7 @@ namespace DropMate2.Domain.Models
         [Required(ErrorMessage ="The wallet id is required")]
         [ForeignKey(nameof(Wallet))]
         public string WalletId { get; set; }
-
+        [Column(TypeName ="money")]
         public decimal Amount { get; set; }
         public string Reference { get; set; }
 

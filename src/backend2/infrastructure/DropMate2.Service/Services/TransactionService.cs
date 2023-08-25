@@ -25,6 +25,10 @@ namespace DropMate2.Service.Services
         {
             Transaction transactionExist = await GetTransactionWithPackageId(packageId, false) 
                 ?? throw new TransactionNotFoundException(packageId);
+            if(transactionExist.IsCompleted)
+            {
+                throw new TransactionCompletedException(transactionExist.Id);
+            }
             if (isCompleted)
             {
                 Wallet creditWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transactionExist.RecieverWalletID, false);
@@ -43,7 +47,7 @@ namespace DropMate2.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task CreateTransaction(TransactionRequestDto transactionDto)
+        public async Task<StandardResponse<TransactionResponseDto>> CreateTransaction(TransactionRequestDto transactionDto)
         {
             Transaction transactionExist = await GetTransactionWithPackageId(transactionDto.PackageId, false);
             if(transactionExist is not null)
@@ -51,7 +55,10 @@ namespace DropMate2.Service.Services
                 throw new TransactionAlreadyExistException( transactionDto.PackageId);
             }
             Transaction transaction = _mapper.Map<Transaction>(transactionDto);
-            Wallet debitWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false);
+            Wallet debitWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false)
+                ??throw new WalletNotFoundException(transaction.SenderWalletID);
+            _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false)
+                ?? throw new WalletNotFoundException(transaction.RecieverWalletID);
             //credit the traveler wallet after the package has been delivered
             if (debitWallet.Balance - transaction.PaymentAmount < 0)
             {
@@ -59,7 +66,10 @@ namespace DropMate2.Service.Services
             }
             debitWallet.Balance -= transaction.PaymentAmount;
             _unitOfWork.TransactionRepository.CreateTransaction(transaction);
+            _unitOfWork.WalletRepository.UpdateWallet(debitWallet);
             await _unitOfWork.SaveAsync();
+            TransactionResponseDto responseDto = _mapper.Map<TransactionResponseDto>(transaction);
+            return StandardResponse<TransactionResponseDto>.Success("Successfully created a transaction", responseDto, 201);
         }
 
         public async Task DeleteTransaction(int id)

@@ -8,8 +8,8 @@ namespace DropMate2.Shared.Dtos.Request.Payment
 {
     public class InitializePaymentRequestDto
     {
-        public string Email { get; set; }
-        public decimal Amount { get; set; }
-        public string Callback_url { get; set; }
+        public string email { get; set; }
+        public string amount { get; set; }
+        public string callback_url { get; set; }
     }
 }

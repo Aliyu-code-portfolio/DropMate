@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Exceptions.Sub
 {
-    public class InsufficientFundFailedException:FailedException
+    public class TransactionCompletedException:NotAlterableException
     {
-        public InsufficientFundFailedException(int packageId):base($"Insufficient wallet balance to pay for package with id: {packageId}. Please fund your wallet")
+        public TransactionCompletedException(int id):base($"Transaction is already completed")
         {
             
         }
     }
+
 }

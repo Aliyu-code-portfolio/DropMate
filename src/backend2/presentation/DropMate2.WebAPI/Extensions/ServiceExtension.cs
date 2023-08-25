@@ -18,6 +18,6 @@ namespace DropMate2.WebAPI.Extensions
         public static void ConfigureUnitOfWork(this IServiceCollection services)=> services.AddScoped<IUnitOfWork, UnitOfWork>();
         public static void ConfigureLoggerManager(this IServiceCollection services) => services.AddSingleton<ILoggerManager, LoggerManager>();
         public static void ConfigureServiceManager(this IServiceCollection services)=> services.AddScoped<IServiceManager,ServiceManager>();
-        public static void ConfigurePayStackHelper(this IServiceCollection services) => services.AddScoped<PayStackHelper>();
+        public static void ConfigurePayStackHelper(this IServiceCollection services) => services.AddSingleton<PayStackHelper>();
     }
 }

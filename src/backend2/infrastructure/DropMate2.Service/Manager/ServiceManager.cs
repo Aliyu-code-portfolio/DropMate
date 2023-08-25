@@ -24,10 +24,10 @@ namespace DropMate2.Service.Manager
             _depositService = new Lazy<IDepositService>(()=> new DepositService(unitOfWork, mapper, payStackHelper));
         }
 
-        public IWalletService IWalletService => _walletService.Value;
+        public IWalletService WalletService => _walletService.Value;
 
         public ITransactionService TransactionService => _transactionService.Value;
 
-        public IDepositService IDepositService => _depositService.Value;
+        public IDepositService DepositService => _depositService.Value;
     }
 }
