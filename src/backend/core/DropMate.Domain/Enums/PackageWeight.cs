@@ -2,7 +2,7 @@
 {
     public enum PackageWeight
     {
-        ExtraLight,
+        ExtraLight=1,
         Light,
         Medium,
         Heavy

@@ -18,10 +18,10 @@ namespace DropMate.Application.ServiceContracts
         Task<StandardResponse<(IEnumerable<PackageResponseDto>,MetaData)>> GetAllUserPackagesAsync(PackageRequestParameter requestParameter, string userId, bool trackChanges);
         Task<StandardResponse<(IEnumerable<PackageResponseDto>,MetaData)>> GetAllTravelPlanPackagesAsync(PackageRequestParameter requestParameter, int travelPlanId, bool trackChanges);
         Task<StandardResponse<PackageResponseDto>> GetPackageByIdAsync(int id, bool trackChanges);
-        Task UpdatePackage(int id, PackageRequestDto requestDto);
-        Task UpdateStatusRecieved(int packageId, int code, Status status);
-        Task UpdateStatusDelivered(int packageId, int code, Status status);
+        Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> UpdatePackage(int id, PackageRequestDto requestDto);
+        Task UpdateStatusRecieved(int packageId, int code);
+        Task UpdateStatusDelivered(int packageId, int code);
         Task DeletePackage(int id);
-        Task<StandardResponse<PackageResponseDto>> CreatePackage(PackageRequestDto requestDto);
+        Task<StandardResponse<(PackageResponseDto package, IEnumerable<TravelPlanResponse> availableTravelPlans)>> CreatePackage(PackageRequestDto requestDto);
     }
 }

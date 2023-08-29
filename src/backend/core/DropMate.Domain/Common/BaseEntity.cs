@@ -10,7 +10,7 @@ namespace DropMate.Domain.Common
         public DateTime CreatedDate { get; set; }= DateTime.Now;
         public DateTime? ModifiedDate { get; set; }
         [MaxLength(50)]
-        public string ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

@@ -61,22 +61,22 @@ namespace DropMate.ControllerEndPoints.Controllers
         [HttpGet("{id}/recieve")]
         public async Task<IActionResult> UpdateRecievedStatus(int id,int code, Status status)
         {
-            await _services.PackageService.UpdateStatusRecieved(id,code, status);
+            await _services.PackageService.UpdateStatusRecieved(id,code);
             return Ok();
         }
         
         [HttpGet("{id}/deliver")]
         public async Task<IActionResult> UpdateDeliveredStatus(int id,int code, Status status)
         {
-            await _services.PackageService.UpdateStatusDelivered(id,code, status);
+            await _services.PackageService.UpdateStatusDelivered(id,code);
             return Ok();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreatePackage([FromBody] PackageRequestDto requestDto)
         {
-            StandardResponse<PackageResponseDto> package = await _services.PackageService.CreatePackage(requestDto);
-            return CreatedAtAction(nameof(GetPackageById), new { Id = package.Data.Id }, package.Data);
+            StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)> result = await _services.PackageService.CreatePackage(requestDto);
+            return CreatedAtAction(nameof(GetPackageById), new { Id = result.Data.Item1.Id }, result.Data.Item2);
         }
 
         [HttpPut("{id}")]

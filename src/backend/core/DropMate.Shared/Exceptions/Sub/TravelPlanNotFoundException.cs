@@ -9,7 +9,7 @@ namespace DropMate.Shared.Exceptions.Sub
 {
     public class TravelPlanNotFoundException:NotFoundException
     {
-        public TravelPlanNotFoundException(object id):base($"The Travel Plan with identity: {id} is not found in the database")
+        public TravelPlanNotFoundException(int id):base($"The Travel Plan with identity: {id} is not found in the database")
         {
             
         }

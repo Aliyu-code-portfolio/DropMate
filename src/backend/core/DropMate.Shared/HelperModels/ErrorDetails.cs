@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DropMate.Shared.ErrorModels
+namespace DropMate.Shared.HelperModels
 {
     public class ErrorDetails
     {

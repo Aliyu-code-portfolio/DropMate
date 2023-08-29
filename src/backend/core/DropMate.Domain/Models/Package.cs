@@ -39,6 +39,7 @@ namespace DropMate.Domain.Models
 
         [Column(TypeName = "money")]
         public decimal Price { get; set; }
+        public string? EstimatedDuration { get; set; }
 
         [Required(ErrorMessage = "Package recieve code is required.")]
         public int RecieveCode { get; set; }

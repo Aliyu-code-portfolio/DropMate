@@ -1,5 +1,5 @@
 ﻿using DropMate.Application.Common;
-using DropMate.Shared.ErrorModels;
+using DropMate.Shared.HelperModels;
 using DropMate.Shared.Exceptions.Base;
 using Microsoft.AspNetCore.Diagnostics;
 

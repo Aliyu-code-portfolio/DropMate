@@ -13,8 +13,8 @@ namespace DropMate.Shared.Dtos.Response
     public record PackageResponseDto
     {
         public int Id { get; init; }
-        public DateTime CreatedDate { get; init; } = DateTime.Now;
-        public int TravelPlanId { get; init; }
+        public DateTime CreatedDate { get; init; }
+        public int? TravelPlanId { get; init; }
         
         public string PackageOwnerId { get; init; }
 
@@ -22,7 +22,7 @@ namespace DropMate.Shared.Dtos.Response
 
         public string DeliveryContactNumber { get; init; }
 
-        public string PackageImageUrl { get; init; }
+        public string? PackageImageUrl { get; init; }
  
         public LagosLocation DepartureLocation { get; init; }
 
@@ -31,6 +31,8 @@ namespace DropMate.Shared.Dtos.Response
         public DateTime DepartureDateTime { get; init; }
 
         public PackageWeight PackageWeight { get; init; }
+        public decimal Price { get; init; }
+        public string? EstimatedDuration { get; init; }
 
         public Status Status { get; init; }
     }

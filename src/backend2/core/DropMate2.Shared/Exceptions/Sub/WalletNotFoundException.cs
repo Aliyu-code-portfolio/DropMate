@@ -13,5 +13,9 @@ namespace DropMate2.Shared.Exceptions.Sub
         {
             
         }
+        public WalletNotFoundException(string id, string walletOwner) : base($"The wallet with id: {id} for {walletOwner} is not found in the database")
+        {
+
+        }
     }
 }

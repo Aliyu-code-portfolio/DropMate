@@ -29,44 +29,41 @@ namespace DropMate2.Service.Services
             {
                 throw new TransactionCompletedException(transactionExist.Id);
             }
+            Wallet walletToCredit;
             if (isCompleted)
             {
-                Wallet creditWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transactionExist.RecieverWalletID, false);
-                creditWallet.Balance += transactionExist.PaymentAmount;
-                _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
-                transactionExist.IsCompleted = true;
-                _unitOfWork.TransactionRepository.UpdateTransaction(transactionExist);
+               walletToCredit = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transactionExist.RecieverWalletID, false);
+               transactionExist.IsCompleted = true;
             }
             else
             {
-                Wallet creditWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transactionExist.SenderWalletID, false);
-                creditWallet.Balance += transactionExist.PaymentAmount;
-                _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
+                walletToCredit = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transactionExist.SenderWalletID, false);
                 _unitOfWork.TransactionRepository.PermanentDeleteTransaction(transactionExist);
             }
+            walletToCredit.Balance += transactionExist.PaymentAmount;
+            _unitOfWork.WalletRepository.UpdateWallet(walletToCredit);
+            _unitOfWork.TransactionRepository.UpdateTransaction(transactionExist);
+
             await _unitOfWork.SaveAsync();
         }
 
         public async Task<StandardResponse<TransactionResponseDto>> CreateTransaction(TransactionRequestDto transactionDto)
         {
             Transaction transactionExist = await GetTransactionWithPackageId(transactionDto.PackageId, false);
-            if(transactionExist is not null)
+            if(transactionExist != null)
             {
                 throw new TransactionAlreadyExistException( transactionDto.PackageId);
             }
             Transaction transaction = _mapper.Map<Transaction>(transactionDto);
-            Wallet debitWallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false)
-                ??throw new WalletNotFoundException(transaction.SenderWalletID);
-            _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false)
-                ?? throw new WalletNotFoundException(transaction.RecieverWalletID);
-            //credit the traveler wallet after the package has been delivered
-            if (debitWallet.Balance - transaction.PaymentAmount < 0)
-            {
-                throw new InsufficientFundFailedException(transaction.PackageId);
-            }
-            debitWallet.Balance -= transaction.PaymentAmount;
+
+            Wallet senderWallet = await GetAndEnsureWalletExists(transaction.SenderWalletID, "Sender");
+            _ = await GetAndEnsureWalletExists(transaction.RecieverWalletID, "Receiver");
+
+            EnsureSufficientFunds(senderWallet.Balance, transaction.PaymentAmount, transaction.PackageId);
+
+            senderWallet.Balance -= transaction.PaymentAmount;
             _unitOfWork.TransactionRepository.CreateTransaction(transaction);
-            _unitOfWork.WalletRepository.UpdateWallet(debitWallet);
+            _unitOfWork.WalletRepository.UpdateWallet(senderWallet);
             await _unitOfWork.SaveAsync();
             TransactionResponseDto responseDto = _mapper.Map<TransactionResponseDto>(transaction);
             return StandardResponse<TransactionResponseDto>.Success("Successfully created a transaction", responseDto, 201);
@@ -121,6 +118,21 @@ namespace DropMate2.Service.Services
         {
              return await _unitOfWork.TransactionRepository
                 .GetTransactionByPackageIdAsync(packageId, false);
+        }
+        private async Task<Wallet> GetAndEnsureWalletExists(string walletId, string walletType)
+        {
+            Wallet wallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(walletId, false)
+                ?? throw new WalletNotFoundException(walletId, walletType);
+
+            return wallet;
+        }
+
+        private void EnsureSufficientFunds(decimal balance, decimal paymentAmount, int packageId)
+        {
+            if (balance - paymentAmount < 0)
+            {
+                throw new InsufficientFundFailedException(packageId);
+            }
         }
     }
 }

@@ -9,7 +9,11 @@ namespace DropMate.Shared.Exceptions.Sub
 {
     public class TravelPlanNotAlterableException:NotAlterableException
     {
-        public TravelPlanNotAlterableException(object id):base($"The Travel plan with identity: {id} cannot be alter anymore in the database. The plan has been subscribed to")
+        public TravelPlanNotAlterableException(int id):base($"The Travel plan with identity: {id} cannot be alter anymore in the database. The plan has been subscribed to")
+        {
+            
+        }
+        public TravelPlanNotAlterableException(string message):base(message)
         {
             
         }

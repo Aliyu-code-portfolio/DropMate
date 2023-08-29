@@ -35,7 +35,7 @@ namespace DropMate.Service.Services
         public async Task DeleteTravelPlan(int id)
         {
             TravelPlan plan = await GetTravelPlanWithId(id, false);
-            if(plan.Packages.Count > 0)
+            if(plan.Packages.Any())
             {
                 throw new TravelPlanNotAlterableException(id);
             }
@@ -66,15 +66,26 @@ namespace DropMate.Service.Services
 
         public async Task UpdateCompleted(int plabId, Status status)
         {
+            if(status==Status.Pending || status == Status.Canceled || status == Status.Booked)
+                throw new TravelPlanNotAlterableException(plabId);
+            if (status == Status.Delivered)
+            {
+                await EnsureAllPackagesDelivered(plabId);
+            }
             TravelPlan plan = await GetTravelPlanWithId(plabId, false);
             plan.IsCompleted = status;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
         }
 
+
         public async Task UpdateIsActive(int plabId, bool isActive)
         {
             TravelPlan plan = await GetTravelPlanWithId(plabId, false);
+            if (plan.Packages.Any(p => p.Status!=Status.Delivered) )
+            {
+                throw new TravelPlanNotAlterableException(plabId);
+            }
             plan.IsActive = isActive;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
@@ -83,7 +94,7 @@ namespace DropMate.Service.Services
         public async Task UpdateTravelPlan(int id, TravelPlanRequestDto requestDto)
         {
             TravelPlan travelPlan =await GetTravelPlanWithId(id, false);
-            if(travelPlan.Packages.Count > 0)
+            if(travelPlan.Packages.Any())
             {
                 throw new TravelPlanNotAlterableException(id);
             }
@@ -98,6 +109,15 @@ namespace DropMate.Service.Services
             TravelPlan plan = await _unitOfWork.TravelPlanRepository.GetTravelPlanByIdAsync(id, trackChanges)
                 ?? throw new TravelPlanNotFoundException(id);
             return plan;
+        }
+        private async Task EnsureAllPackagesDelivered(int plabId)
+        {
+            IEnumerable<Package> packages = await _unitOfWork.PackageRepository
+                    .GetAllTravelPlanPackagesAsync(new PackageRequestParameter(), plabId, false);
+            if (packages.Any(package => package.Status != Status.Delivered))
+            {
+                throw new TravelPlanNotAlterableException("Not all packages have been delivered yet. Complete delivery.");
+            }
         }
     }
 }

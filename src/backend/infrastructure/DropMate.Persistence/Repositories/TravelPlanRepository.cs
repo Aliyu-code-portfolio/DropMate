@@ -1,4 +1,5 @@
 ﻿using DropMate.Application.Contracts;
+using DropMate.Domain.Enums;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
 using DropMate.Persistence.Extensions;
@@ -48,9 +49,15 @@ namespace DropMate.Persistence.Repositories
             return new PagedList<TravelPlan>(plans, count, requestParameters.PageNumber, requestParameters.PageSize);
         }
 
+        public async Task<IEnumerable<TravelPlan>> GetTravelPlanByDestinationAsync(LagosLocation destination, bool trackChanges)
+        {
+            return await FindByCondition(t => !t.IsDeleted && t.IsActive && t.ArrivalLocation.Equals(destination), trackChanges)
+                .Include(t => t.Traveler).ToListAsync();
+        }
+        
         public async Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges)
         {
-            return await FindByCondition(t => !t.IsDeleted && t.Id.Equals(id), trackChanges).Where(t => !t.IsDeleted)
+            return await FindByCondition(t => !t.IsDeleted && t.Id.Equals(id), trackChanges)
                 .Include(t => t.Packages).Include(t => t.Traveler).FirstOrDefaultAsync();
         }
 

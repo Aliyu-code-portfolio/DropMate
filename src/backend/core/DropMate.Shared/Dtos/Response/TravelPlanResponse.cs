@@ -27,5 +27,6 @@ namespace DropMate.Shared.Dtos.Response
         public bool IsActive { get; init; }
 
         public decimal Price { get; init; }
+        public UserResponseDto Traveler { get; init; }
     }
 }

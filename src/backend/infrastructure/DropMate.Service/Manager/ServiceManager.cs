@@ -2,6 +2,8 @@
 using DropMate.Application.Common;
 using DropMate.Application.ServiceContracts;
 using DropMate.Service.Services;
+using DropMate.Shared.HelperModels;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,11 @@ namespace DropMate.Service.Manager
         private readonly Lazy<IPackageService> _packageService;
         private readonly Lazy<IReviewService> _reviewService;
 
-        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper)
+        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
         {
             _userService = new Lazy<IUserService>(()=> new UserService(unitOfWork, mapper));
             _travelPlanService = new Lazy<ITravelPlanService>(()=> new TravelPlanService(unitOfWork,mapper));
-            _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper));
+            _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper, configuration));
             _reviewService = new Lazy<IReviewService>(() => new ReviewService(unitOfWork, mapper));
         }
         public IUserService UserService => _userService.Value;
