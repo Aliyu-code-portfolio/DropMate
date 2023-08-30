@@ -22,6 +22,9 @@ namespace DropMate.Shared.Dtos.Request
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; init; }
 
+        [Required(ErrorMessage ="Password is required")]
+        public string Password { get; init; }
+
         [Phone(ErrorMessage = "Invalid phone number.")]
         public string? PhoneNumber { get; init; }
 

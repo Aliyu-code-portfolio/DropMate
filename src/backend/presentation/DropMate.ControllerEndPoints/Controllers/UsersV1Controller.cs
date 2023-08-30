@@ -46,15 +46,6 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(user);
         }
 
-        //Remove when auth is implemented
-        [HttpPost]
-        [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateRequestDto requestDto)
-        {
-            StandardResponse<UserResponseDto> user = await _services.UserService.CreateUser(requestDto);
-            return CreatedAtAction(nameof(GetUsersById),new { Id= user.Data.Id}, user.Data);
-        }
-
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationActionFilters))]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateRequestDto requestDto)

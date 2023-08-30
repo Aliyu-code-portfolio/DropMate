@@ -13,6 +13,8 @@ namespace DropMate.Domain.Models
         [Required(ErrorMessage ="User ID is required")]
         [ForeignKey(nameof(User))]
         public string PackageOwnerId { get; set; }
+        [ForeignKey(nameof(Review))]
+        public int? ReviewId { get; set; }
 
         [Required(ErrorMessage = "Delivery contact name is required.")]
         [MaxLength(50, ErrorMessage = "Maximum length is 50")]
@@ -52,6 +54,7 @@ namespace DropMate.Domain.Models
         // Navigation properties
         public virtual TravelPlan? TravelPlan { get; set; }
         public virtual User? Owner { get; set; }
+        public virtual Review? Reviews { get; set; }
 
     }
 }

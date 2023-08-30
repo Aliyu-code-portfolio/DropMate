@@ -1,12 +1,17 @@
 ﻿using DropMate.Application.Common;
 using DropMate.Application.ServiceContracts;
 using DropMate.ControllerEndPoints.ValidationFilter;
+using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
 using DropMate.Service.Manager;
 using DropMate.Shared.HelperModels;
 using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace DropMate.WebAPI.Extensions
 {
@@ -26,6 +31,44 @@ namespace DropMate.WebAPI.Extensions
                 opt.ReportApiVersions = true;
                 opt.AssumeDefaultVersionWhenUnspecified = true;
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+        }
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 8;
+                opt.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<RepositoryContext>()
+                .AddDefaultTokenProviders();
+        }
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            var secretKey = Environment.GetEnvironmentVariable("SECRET");
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["validIssuer"],
+                    ValidAudience = jwtSettings["validAudience"],
+                    IssuerSigningKey = new
+                    SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
             });
         }
     }

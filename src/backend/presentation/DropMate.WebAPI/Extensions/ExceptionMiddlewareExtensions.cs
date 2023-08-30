@@ -21,6 +21,7 @@ namespace DropMate.WebAPI.Extensions
                         context.Response.StatusCode = contextFeature.Error switch
                         {
                             BadRequestException =>StatusCodes.Status400BadRequest,
+                            UnauthorizedException =>StatusCodes.Status401Unauthorized,
                             NotFoundException => StatusCodes.Status404NotFound,
                             NotAlterableException => StatusCodes.Status406NotAcceptable,
                             InvalidCodeException => StatusCodes.Status403Forbidden,

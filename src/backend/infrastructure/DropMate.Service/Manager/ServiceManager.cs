@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using DropMate.Application.Common;
 using DropMate.Application.ServiceContracts;
+using DropMate.Domain.Models;
 using DropMate.Service.Services;
 using DropMate.Shared.HelperModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -18,13 +20,15 @@ namespace DropMate.Service.Manager
         private readonly Lazy<ITravelPlanService> _travelPlanService;
         private readonly Lazy<IPackageService> _packageService;
         private readonly Lazy<IReviewService> _reviewService;
+        private readonly Lazy<IAuthenticationService> _authenticationService;
 
-        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper,UserManager<User> userManager, IConfiguration configuration)
         {
             _userService = new Lazy<IUserService>(()=> new UserService(unitOfWork, mapper));
             _travelPlanService = new Lazy<ITravelPlanService>(()=> new TravelPlanService(unitOfWork,mapper));
             _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper, configuration));
             _reviewService = new Lazy<IReviewService>(() => new ReviewService(unitOfWork, mapper));
+            _authenticationService =  new Lazy<IAuthenticationService>(()=>new AuthenticationService(unitOfWork,mapper,userManager,configuration));
         }
         public IUserService UserService => _userService.Value;
 
@@ -33,5 +37,7 @@ namespace DropMate.Service.Manager
         public IPackageService PackageService => _packageService.Value;
 
         public IReviewService ReviewService => _reviewService.Value;
+
+        public IAuthenticationService AuthenticationService => _authenticationService.Value;
     }
 }

@@ -11,7 +11,8 @@ builder.Services.ConfigureUnitOfWork();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureActionFilter();
 builder.Services.ConfigureApiVersioning();
-
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 
 builder.Services.AddControllers(config=>config.RespectBrowserAcceptHeader=true)
     .AddXmlDataContractSerializerFormatters()
@@ -35,6 +36,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

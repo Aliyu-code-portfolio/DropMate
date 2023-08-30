@@ -42,7 +42,7 @@ namespace DropMate.Persistence.Repositories
             List<Review> reviews = await FindAll(trackChanges).Where(r=>(uint)r.Rate>=requestParameters.MinRating
             && (uint)r.Rate <= requestParameters.MaxRating)
                 .Skip((requestParameters.PageNumber-1)*requestParameters.PageSize).Take(requestParameters.PageSize)
-                .Sort(requestParameters.OrderBy).Include(r=>r.TravelPlan).ToListAsync();
+                .Sort(requestParameters.OrderBy).Include(r=>r.Package).ToListAsync();
             int count = await FindAll(trackChanges).Where(r => (uint)r.Rate >= requestParameters.MinRating
             && (uint)r.Rate <= requestParameters.MaxRating).CountAsync();
             return new PagedList<Review>(reviews, count,requestParameters.PageNumber,requestParameters.PageSize);
@@ -60,7 +60,7 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<Review> GetReviewByIdAsync(int id, bool trackChanges)
         {
-            return await FindByCondition(r=>r.Id.Equals(id),trackChanges).Include(r => r.TravelPlan).FirstOrDefaultAsync();
+            return await FindByCondition(r=>r.Id.Equals(id),trackChanges).Include(r => r.Package).FirstOrDefaultAsync();
         }
 
     }
