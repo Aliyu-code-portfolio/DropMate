@@ -4,6 +4,7 @@ using DropMate.ControllerEndPoints.ValidationFilter;
 using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
 using DropMate.Service.Manager;
+using DropMate.Service.Services;
 using DropMate.Shared.HelperModels;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,8 @@ namespace DropMate.WebAPI.Extensions
         public static void ConfigureUnitOfWork(this IServiceCollection services)=> services.AddScoped<IUnitOfWork, UnitOfWork>();
         public static void ConfigureServiceManager(this IServiceCollection services) => services.AddScoped<IServiceManager, ServiceManager>();
         public static void ConfigureActionFilter(this IServiceCollection services) => services.AddScoped<ValidationActionFilters>();
+        public static void ConfigurePhotoService(this IServiceCollection services) => services.AddScoped<IPhotoService, PhotoService>();
+        public static void ConfigureEmailService(this IServiceCollection services) => services.AddScoped<IEmailService, EmailService>();
         public static void ConfigureApiVersioning(this IServiceCollection services)
         {
             services.AddApiVersioning(opt =>

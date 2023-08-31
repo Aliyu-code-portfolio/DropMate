@@ -5,6 +5,7 @@ using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -77,6 +78,13 @@ namespace DropMate.ControllerEndPoints.Controllers
         {
             StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)> result = await _services.PackageService.CreatePackage(requestDto);
             return CreatedAtAction(nameof(GetPackageById), new { Id = result.Data.Item1.Id }, result.Data.Item2);
+        }
+        
+        [HttpPost("{id}/package-img")]
+        public async Task<IActionResult> UploadPackageImg(int id, IFormFile file)
+        {
+            StandardResponse<string> result = await _services.PackageService.UploadPackageImg(id,file);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]

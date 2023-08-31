@@ -5,7 +5,9 @@ using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
@@ -17,10 +19,12 @@ namespace DropMate.ControllerEndPoints.Controllers
     {
 
         private readonly IServiceManager _services;
+        private readonly IEmailService emailService;
 
-        public UsersV1Controller(IServiceManager services)
+        public UsersV1Controller(IServiceManager services, IEmailService emailService)
         {
             _services = services;
+            this.emailService = emailService;
         }
 
         [HttpGet]
@@ -46,6 +50,13 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(user);
         }
 
+        [HttpPost("{id}/profile-img")]
+        public async Task<IActionResult> UploadProfileImg(string id, IFormFile file)
+        {
+            StandardResponse<string> result = await _services.UserService.UploadProfileImg(id, file);
+            return Ok(result);
+        }
+
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationActionFilters))]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateRequestDto requestDto)
@@ -54,10 +65,17 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/profile-img")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            await _services.UserService.DeleteUser(id, false);
+            await _services.UserService.RemoveProfileImg(id);
+            return Ok();
+        }
+        
+        [HttpDelete("{id}/")]
+        public async Task<IActionResult> DeleteProfileImg(string id)
+        {
+            await _services.UserService.RemoveProfileImg(id);
             return Ok();
         }
         [HttpOptions]
@@ -66,5 +84,6 @@ namespace DropMate.ControllerEndPoints.Controllers
             Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT");
             return Ok();
         }
+
     }
 }

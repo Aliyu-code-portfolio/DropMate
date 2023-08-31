@@ -11,6 +11,7 @@ using DropMate.Shared.RequestFeature.Common;
 using DropMate.Shared.Utilities;
 using Google.Maps;
 using Google.Maps.DistanceMatrix;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 using Location = Google.Maps.Location;
@@ -21,12 +22,14 @@ namespace DropMate.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
         private readonly IConfiguration _configuration;
 
-        public PackageService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+        public PackageService(IUnitOfWork unitOfWork, IMapper mapper,IPhotoService photoService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _photoService = photoService;
             _configuration = configuration;
         }
         public async Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> CreatePackage(PackageRequestDto requestDto)
@@ -162,8 +165,6 @@ namespace DropMate.Service.Services
 
             var distanceResponse = distanceMatrixService.GetResponse(distanceRequest);
 
-            // You can now access the distance and duration information from the response
-            // For example:
             var distance = distanceResponse.Rows[0].Elements[0].distance.Text;
             var estimatedDuration = distanceResponse.Rows[0].Elements[0].duration.Text;
             decimal price = GetPrice(distance, weight);
@@ -187,6 +188,16 @@ namespace DropMate.Service.Services
                 result=result +" "+ word;
             }
             return result;
+        }
+
+        public async Task<StandardResponse<string>> UploadPackageImg(int id, IFormFile file)
+        {
+            Package package = await GetPackageWithId(id, false);
+            string url = _photoService.UploadPhoto(file, id.ToString(), "DropMateProfileImages");
+            package.PackageImageUrl = url;
+            _unitOfWork.PackageRepository.UpdatePackage(package);
+            await _unitOfWork.SaveAsync();
+            return new StandardResponse<string>(200, true, string.Empty, url);
         }
     }
 }

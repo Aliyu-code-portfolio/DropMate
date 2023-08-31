@@ -10,6 +10,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.ConfigureUnitOfWork();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureActionFilter();
+builder.Services.ConfigurePhotoService();
+builder.Services.ConfigureEmailService();
 builder.Services.ConfigureApiVersioning();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);

@@ -4,6 +4,7 @@ using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace DropMate.Application.ServiceContracts
         Task<StandardResponse<(IEnumerable<PackageResponseDto>,MetaData)>> GetAllTravelPlanPackagesAsync(PackageRequestParameter requestParameter, int travelPlanId, bool trackChanges);
         Task<StandardResponse<PackageResponseDto>> GetPackageByIdAsync(int id, bool trackChanges);
         Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> UpdatePackage(int id, PackageRequestDto requestDto);
+        Task<StandardResponse<string>> UploadPackageImg(int id, IFormFile file);
+
         Task UpdateStatusRecieved(int packageId, int code);
         Task UpdateStatusDelivered(int packageId, int code);
         Task DeletePackage(int id);

@@ -9,7 +9,7 @@ namespace DropMate.Application.ServiceContracts
 {
     public interface IPhotoService
     {
-        string UploadPhoto(IFormFile file);
-        bool RemoveUploadedPhoto(string url);
+        string UploadPhoto(IFormFile file, string id, string folder);
+        bool RemoveUploadedPhoto(string id, string folder);
     }
 }

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DropMate.Application.ServiceContracts
 {
-    internal interface IEmailService
+    public interface IEmailService
     {
+        void SendEmail(string toAddress, string subject, string body);
     }
 }

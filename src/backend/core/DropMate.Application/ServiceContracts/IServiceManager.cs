@@ -13,6 +13,5 @@ namespace DropMate.Application.ServiceContracts
         IPackageService PackageService { get; }
         IReviewService ReviewService { get; }
         IAuthenticationService AuthenticationService { get; }
-        IPhotoService PhotoService { get; }
     }
 }
