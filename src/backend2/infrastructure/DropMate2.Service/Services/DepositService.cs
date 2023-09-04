@@ -72,6 +72,7 @@ namespace DropMate2.Service.Services
             };
             var serializedDto = JsonSerializer.Serialize(initializePaymentRequest);
             var httpContent = new StringContent(serializedDto, Encoding.UTF8,"application/json");
+
             using(HttpResponseMessage response =await PayStackHelper.ApiClient
                 .PostAsync("transaction/initialize", httpContent))
             {
@@ -134,6 +135,7 @@ namespace DropMate2.Service.Services
             _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
             _unitOfWork.InitializedPaymentRepository.DeleteInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
+            //send email receipt here
         }
         private async Task<Deposit> GetDepositWithId(int id, bool trackChanges)
         {

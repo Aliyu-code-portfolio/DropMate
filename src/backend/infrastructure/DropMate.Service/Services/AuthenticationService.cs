@@ -8,6 +8,7 @@ using DropMate.Shared.Exceptions.Sub;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -19,16 +20,18 @@ namespace DropMate.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, IConfiguration configuration)
+        public AuthenticationService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager,IEmailService emailService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _emailService = emailService;
             _configuration = configuration;
         }
-        public async Task RegisterUser(UserCreateRequestDto requestDto)
+        public async Task<string> RegisterUser(UserCreateRequestDto requestDto)
         {
             User user = _mapper.Map<User>(requestDto);
             user.UserName = requestDto.Email;
@@ -41,12 +44,12 @@ namespace DropMate.Service.Services
                     if (!error.Description.Contains("Username"))
                         errors += error.Description.TrimEnd('.') + ", ";
                 }
-                throw new RegisterBadRequestException(errors.TrimEnd(',',' '));
+                throw new RegisterErrorException(errors.TrimEnd(',',' '));
             }
             _userManager.AddToRoleAsync(user, "User");
-            
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
-        public async Task RegisterAdmin(UserCreateRequestDto requestDto)
+        public async Task<string> RegisterAdmin(UserCreateRequestDto requestDto)
         {
             User user = _mapper.Map<User>(requestDto);
             user.UserName = requestDto.Email;
@@ -59,9 +62,10 @@ namespace DropMate.Service.Services
                     if(!error.Description.Contains("Username"))
                         errors +=  error.Description.TrimEnd('.') + ", ";
                 }
-                throw new RegisterBadRequestException(errors.TrimEnd(',', ' '));
+                throw new RegisterErrorException(errors.TrimEnd(',', ' '));
             }
             _userManager.AddToRoleAsync(user, "Admin");
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
         public async Task<StandardResponse<(string, UserResponseDto)>> ValidateAndCreateToken(UserLoginDto requestDto)
@@ -77,8 +81,17 @@ namespace DropMate.Service.Services
             return StandardResponse<(string, UserResponseDto)>.Success("Successful", (token, userDto));
         }
 
+        public async Task<string> GenerateEmailActivationToken(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email)
+                 ?? throw new UserNotFoundException(email);
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
 
-
+        public void SendEmailToken(string email, string title, string message)
+        {
+            _emailService.SendEmail(email, title, message);
+        }
 
         private async Task<string> CreateToken(User user)
         {
@@ -123,5 +136,60 @@ namespace DropMate.Service.Services
             return tokenOptions;
         }
 
+        public async Task ConfirmEmailAddress(string email, string token)
+        {
+            string trimedToken = token.Replace(" ", "+");
+            User user = await _userManager.FindByEmailAsync(email)
+                ?? throw new UserNotFoundException(email);
+            if(user.EmailConfirmed)
+            {
+                throw new EmailConfirmationException(user.Email);
+            }
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, trimedToken);
+            if (!result.Succeeded)
+            {
+                throw new EmailConfirmationException(user.Email);
+            }
+        }
+
+        public async Task ResetPassword(string token, UserLoginDto requestDto)
+        {
+            string trimedToken = token.Replace(" ", "+");
+            User user = await _userManager.FindByEmailAsync(requestDto.Email)
+                ?? throw new UserNotFoundException(requestDto.Email);
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, trimedToken, requestDto.Password);
+            if (!result.Succeeded)
+            {
+                string errors = string.Empty;
+                foreach (var error in result.Errors)
+                {
+                    errors += error.Description.TrimEnd('.') + ", ";
+                }
+                throw new PasswordResetFailedException(errors.TrimEnd(',', ' '));
+            }
+        }
+
+        public async Task<string> GeneratePasswordResetToken(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email)
+                ?? throw new UserNotFoundException(email);
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task ChangePassword(ChangePasswordRequestDto requestDto)
+        {
+            User user = await _userManager.FindByEmailAsync(requestDto.Email)
+                ?? throw new UserNotFoundException(requestDto.Email);
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, requestDto.OldPassword, requestDto.NewPassword);
+            if (!result.Succeeded)
+            {
+                string errors = string.Empty;
+                foreach (var error in result.Errors)
+                {
+                    errors += error.Description.TrimEnd('.') + ", ";
+                }
+                throw new PasswordChangeFailedException(errors.TrimEnd(',', ' '));
+            }
+        }
     }
 }

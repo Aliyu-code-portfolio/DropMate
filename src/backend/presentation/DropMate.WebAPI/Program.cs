@@ -1,9 +1,13 @@
 using DropMate.Application.Common;
 using DropMate.WebAPI.Extensions;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
+"/nlog.config"));
 
 // Add services to the container.
+builder.Services.ConfigureCors();
 builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.ConfigureLoggerManager();
 builder.Services.AddAutoMapper(typeof(Program));
@@ -36,7 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 

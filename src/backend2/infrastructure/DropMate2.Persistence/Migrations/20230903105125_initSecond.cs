@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DropMate2.Persistence.Migrations
 {
-    public partial class init : Migration
+    public partial class initSecond : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

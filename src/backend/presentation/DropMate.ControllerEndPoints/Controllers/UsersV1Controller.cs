@@ -19,12 +19,10 @@ namespace DropMate.ControllerEndPoints.Controllers
     {
 
         private readonly IServiceManager _services;
-        private readonly IEmailService emailService;
 
         public UsersV1Controller(IServiceManager services, IEmailService emailService)
         {
             _services = services;
-            this.emailService = emailService;
         }
 
         [HttpGet]

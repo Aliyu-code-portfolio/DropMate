@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Response.Payment
 {
-    public class Data
+    public record Data
     {
         public string id { get; set; }
         public string? status { get; set; }

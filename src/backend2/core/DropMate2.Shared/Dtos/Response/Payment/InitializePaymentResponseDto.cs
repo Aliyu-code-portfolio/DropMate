@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Response.Payment
 {
-    public class InitializePaymentResponseDto
+    public record InitializePaymentResponseDto
     {
-        public Data data { get; set; }
+        public Data data { get; init; }
 
     }
 }

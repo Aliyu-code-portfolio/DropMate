@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Request
 {
-    public class DepositRequestDto
+    public record DepositRequestDto
     {
         [Required(ErrorMessage = "The wallet id is required")]
-        public string WalletId { get; set; }
+        public string WalletId { get; init; }
         [EmailAddress(ErrorMessage ="Email is invalid")]
         [Required(ErrorMessage ="Email address is required")]
-        public string Email { get; set; }
+        public string Email { get; init; }
         [Range(50,double.MaxValue)]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; init; }
 
     }
 }

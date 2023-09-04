@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Request.Payment
 {
-    public class InitializePaymentRequestDto
+    public record InitializePaymentRequestDto
     {
-        public string email { get; set; }
-        public string amount { get; set; }
-        public string callback_url { get; set; }
+        public string email { get; init; }
+        public string amount { get; init; }
+        public string callback_url { get; init; }
     }
 }

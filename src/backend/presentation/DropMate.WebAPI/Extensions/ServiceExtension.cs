@@ -5,7 +5,6 @@ using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
 using DropMate.Service.Manager;
 using DropMate.Service.Services;
-using DropMate.Shared.HelperModels;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +17,14 @@ namespace DropMate.WebAPI.Extensions
 {
     public static class ServiceExtension
     {
+        public static void ConfigureCors(this IServiceCollection services) =>
+         services.AddCors(options =>
+         {
+             options.AddPolicy("CorsPolicy", builder =>
+             builder.AllowAnyOrigin()
+             .AllowAnyMethod()
+             .AllowAnyHeader());
+        });
         public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)=> 
             services.AddDbContext<RepositoryContext>(option=>option.UseSqlServer(configuration.GetConnectionString("Default")));
 
@@ -43,9 +50,10 @@ namespace DropMate.WebAPI.Extensions
                 opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
-                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireNonAlphanumeric = true;
                 opt.Password.RequiredLength = 8;
                 opt.User.RequireUniqueEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
             })
                 .AddEntityFrameworkStores<RepositoryContext>()
                 .AddDefaultTokenProviders();

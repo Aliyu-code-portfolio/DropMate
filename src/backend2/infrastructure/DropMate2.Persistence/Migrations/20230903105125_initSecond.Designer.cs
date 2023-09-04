@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DropMate2.Persistence.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230824200155_init")]
-    partial class init
+    [Migration("20230903105125_initSecond")]
+    partial class initSecond
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

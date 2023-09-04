@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DropMate.Shared.Exceptions.Sub
 {
-    public class RegisterBadRequestException:BadRequestException
+    public class RegisterErrorException:UnauthorizedException
     {
-        public RegisterBadRequestException(string message):base(message)
+        public RegisterErrorException(string message):base(message)
         {
             
         }

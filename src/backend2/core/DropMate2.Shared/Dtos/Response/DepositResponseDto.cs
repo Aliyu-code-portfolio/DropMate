@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Response
 {
-    public class DepositResponseDto
+    public record DepositResponseDto
     {
-        public int Id { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public string Reference { get; set; }
-        public string WalletId { get; set; }
+        public int Id { get; init; }
+        public DateTime CreatedDate { get; init; }
+        public string Reference { get; init; }
+        public string WalletId { get; init; }
 
-        public decimal Amount { get; set; }
+        public decimal Amount { get; init; }
     }
 }

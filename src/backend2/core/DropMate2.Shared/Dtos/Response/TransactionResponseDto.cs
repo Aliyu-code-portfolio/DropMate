@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Response
 {
-    public class TransactionResponseDto
+    public record TransactionResponseDto
     {
-        public int Id { get; set; }
-        public decimal PaymentAmount { get; set; }
-        public bool IsCompleted { get; set; }
-        public string RecieverWalletID { get; set; }
-        public string SenderWalletID { get; set; }
-        public int? TravelPlanId { get; set; }
-        public int? PackageId { get; set; }
+        public int Id { get; init; }
+        public decimal PaymentAmount { get; init; }
+        public bool IsCompleted { get; init; }
+        public string RecieverWalletID { get; init; }
+        public string SenderWalletID { get; init; }
+        public int? TravelPlanId { get; init; }
+        public int? PackageId { get; init; }
     }
 }

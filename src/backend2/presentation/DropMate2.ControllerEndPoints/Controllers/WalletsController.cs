@@ -1,6 +1,7 @@
 ﻿using DropMate2.Application.ServiceContracts;
 using DropMate2.Shared.Dtos.Request;
 using DropMate2.Shared.RequestFeatures;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -18,6 +19,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllWallets([FromQuery] WalletRequestParameter requestParameter)
         {
             var result = await _services.WalletService.GetAllWallets(requestParameter, false);

@@ -22,13 +22,13 @@ namespace DropMate.Service.Manager
         private readonly Lazy<IReviewService> _reviewService;
         private readonly Lazy<IAuthenticationService> _authenticationService;
 
-        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper,UserManager<User> userManager, IPhotoService photoService, IConfiguration configuration)
+        public ServiceManager(IUnitOfWork unitOfWork, IMapper mapper,UserManager<User> userManager, IPhotoService photoService,IEmailService mailService, IConfiguration configuration)
         {
             _userService = new Lazy<IUserService>(()=> new UserService(unitOfWork, mapper,photoService));
             _travelPlanService = new Lazy<ITravelPlanService>(()=> new TravelPlanService(unitOfWork,mapper));
             _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper, photoService, configuration));
             _reviewService = new Lazy<IReviewService>(() => new ReviewService(unitOfWork, mapper));
-            _authenticationService =  new Lazy<IAuthenticationService>(()=>new AuthenticationService(unitOfWork,mapper,userManager,configuration));
+            _authenticationService =  new Lazy<IAuthenticationService>(()=>new AuthenticationService(unitOfWork,mapper,userManager,mailService,configuration));
         }
         public IUserService UserService => _userService.Value;
 

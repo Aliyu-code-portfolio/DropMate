@@ -317,15 +317,15 @@ namespace DropMate.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2b058c9a-4705-4a61-b87a-d611cb2c559e",
-                            ConcurrencyStamp = "1914c343-4ece-431a-952d-ad573495c8ee",
+                            Id = "b876fadd-d1f3-49ab-a4bb-53cbf43fd8a6",
+                            ConcurrencyStamp = "4363756e-aaaf-434f-9725-0974a2de5859",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "72b2ebf3-1884-4850-bd93-4eeb38a0ed2e",
-                            ConcurrencyStamp = "17ff9ebd-82f7-457f-bd81-d66218505865",
+                            Id = "c2ee3932-f872-4b73-9867-dcc677f2979f",
+                            ConcurrencyStamp = "42fed2c6-31df-4085-b59d-c7f242ad09ae",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

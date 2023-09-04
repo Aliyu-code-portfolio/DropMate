@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DropMate2.Shared.Dtos.Request
 {
-    public class WalletRequestDto
+    public record WalletRequestDto
     {
         [Required(ErrorMessage ="The wallet id is required")]
-        public string Id { get; set; }
+        public string Id { get; init; }
     }
 }
