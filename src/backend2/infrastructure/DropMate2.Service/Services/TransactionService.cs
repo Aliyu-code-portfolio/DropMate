@@ -134,5 +134,17 @@ namespace DropMate2.Service.Services
                 throw new InsufficientFundFailedException(packageId);
             }
         }
+
+        public async Task RefundPackagePayment(int packageId)
+        {
+            Transaction transaction = await _unitOfWork.TransactionRepository.GetTransactionByPackageIdAsync(packageId, false)
+                ?? throw new TransactionNotFoundException(packageId);
+            Wallet wallet = await _unitOfWork.WalletRepository.GetWalletByIdAsync(transaction.SenderWalletID, false)
+                ?? throw new WalletNotFoundException(transaction.SenderWalletID);
+            wallet.Balance += transaction.PaymentAmount;
+            _unitOfWork.TransactionRepository.DeleteTransaction(transaction);
+            _unitOfWork.WalletRepository.UpdateWallet(wallet);
+            await _unitOfWork.SaveAsync();
+        }
     }
 }

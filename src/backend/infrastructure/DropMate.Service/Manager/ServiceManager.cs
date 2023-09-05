@@ -4,6 +4,7 @@ using DropMate.Application.ServiceContracts;
 using DropMate.Domain.Models;
 using DropMate.Service.Services;
 using DropMate.Shared.HelperModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;

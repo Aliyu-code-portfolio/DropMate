@@ -48,14 +48,14 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<User> GetByEmailAsync(string email, bool trackChanges)
         {
-            return await FindByCondition(u => u.Email.ToLower().Contains(email.ToLower())
+            return await FindByCondition(u => u.Email.ToLower().Equals(email.ToLower())
             && !u.IsDeleted, trackChanges).Where(u=>!u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
             .FirstOrDefaultAsync();
         }
 
         public async Task<User> GetByIdAsync(string id, bool trackChanges)
         {
-            return await FindByCondition(u => u.Id.ToLower().Contains(id.ToLower())
+            return await FindByCondition(u => u.Id.ToLower().Equals(id.ToLower())
             && !u.IsDeleted, trackChanges).Where(u => !u.IsDeleted).Include(u => u.TravelPlans).Include(u => u.Packages)
             .FirstOrDefaultAsync();
         }

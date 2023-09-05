@@ -18,8 +18,8 @@ namespace DropMate2.ControllerEndPoints.Controllers
             _services = services;
         }
 
-        [HttpGet]
         [Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetAllWallets([FromQuery] WalletRequestParameter requestParameter)
         {
             var result = await _services.WalletService.GetAllWallets(requestParameter, false);

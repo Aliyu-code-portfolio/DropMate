@@ -21,10 +21,9 @@ namespace DropMate.Application.ServiceContracts
         Task<StandardResponse<PackageResponseDto>> GetPackageByIdAsync(int id, bool trackChanges);
         Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> UpdatePackage(int id, PackageRequestDto requestDto);
         Task<StandardResponse<string>> UploadPackageImg(int id, IFormFile file);
-
         Task UpdateStatusRecieved(int packageId, int code);
-        Task UpdateStatusDelivered(int packageId, int code);
-        Task DeletePackage(int id);
+        Task UpdateStatusDelivered(int packageId, int code, string token);
+        Task DeletePackage(int id, string token);
         Task<StandardResponse<(PackageResponseDto package, IEnumerable<TravelPlanResponse> availableTravelPlans)>> CreatePackage(PackageRequestDto requestDto);
     }
 }

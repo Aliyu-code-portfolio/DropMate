@@ -34,24 +34,27 @@ namespace DropMate2.WebAPI.Extensions
         public static void ConfigurePayStackHelper(this IServiceCollection services) => services.AddSingleton<PayStackHelper>();
         public static void ConfigureIdentityService(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("JwtSettings"); // Customize this to your configuration structure
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            var secretKey = Environment.GetEnvironmentVariable("SECRET");
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.Authority = jwtSettings["Authority"]; // URL of Microservice 1's identity provider
-                    options.Audience = jwtSettings["Audience"]; // Audience for Microservice 2
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings["ValidIssuer"], // Microservice 1's URL
-                        ValidAudience = jwtSettings["Audience"], // Microservice 2's identifier
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))) // Microservice 2's secret key
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["validIssuer"], // URL of Microservice 1
+                    ValidAudience = jwtSettings["validAudience"], // Identifier for Microservice 1
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)) // Same secret key as Microservice 1
+                };
+            });
         }
         public static void ConfigureSwaggerAuth(this IServiceCollection services)
         {

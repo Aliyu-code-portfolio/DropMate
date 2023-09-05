@@ -59,8 +59,9 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(package);
         }
 
+        [Authorize]
         [HttpGet("{id}/recieve")]
-        public async Task<IActionResult> UpdateRecievedStatus(int id,int code, Status status)
+        public async Task<IActionResult> UpdateRecievedStatus(int id,int code,[FromForm] Status status)
         {
             await _services.PackageService.UpdateStatusRecieved(id,code);
             return Ok();
@@ -69,7 +70,8 @@ namespace DropMate.ControllerEndPoints.Controllers
         [HttpGet("{id}/deliver")]
         public async Task<IActionResult> UpdateDeliveredStatus(int id,int code, Status status)
         {
-            await _services.PackageService.UpdateStatusDelivered(id,code);
+            string token = Request.Headers.Authorization;
+            await _services.PackageService.UpdateStatusDelivered(id,code, token);
             return Ok();
         }
 
@@ -94,11 +96,13 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePackage(int id)
         {
-            await _services.PackageService.DeletePackage(id);
-            return Ok();
+            string bearToken = Request.Headers.Authorization;
+            await _services.PackageService.DeletePackage(id, bearToken);
+            return Ok("Refunded and deleted successsfully");
         }
         [HttpOptions]
         public IActionResult Options()

@@ -9,7 +9,7 @@ namespace DropMate.Shared.Exceptions.Sub
 {
     public class PackageInvalidCodeException:InvalidCodeException
     {
-        public PackageInvalidCodeException(object id):base($"The package with identity: {id} update failed due to invalid inputs")
+        public PackageInvalidCodeException(object id):base($"The package with identity: {id} update failed due to invalid code")
         {
             
         }

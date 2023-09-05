@@ -6,6 +6,7 @@ using DropMate.Domain.Models;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.Exceptions.Sub;
+using DropMate.Shared.HelperModels;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using DropMate.Shared.Utilities;
@@ -47,8 +48,7 @@ namespace DropMate.Service.Services
             await _unitOfWork.SaveAsync();
 
             //check database for people going towards that route and push notification to them.
-
-            //Add distance from traveler to package should be a factor
+            //Feature to add: Distance from traveler to package should be a factor
             IEnumerable<TravelPlan> plans = await _unitOfWork.TravelPlanRepository
                 .GetTravelPlanByDestinationAsync(package.ArrivalLocation, false);
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
@@ -59,16 +59,21 @@ namespace DropMate.Service.Services
 
         }
 
-        public async Task DeletePackage(int id)
+        public async Task DeletePackage(int id, string token)
         {
             Package package = await GetPackageWithId(id, false);
-            if(package.Status==Status.Booked|| package.Status == Status.Transit || package.Status == Status.Delivered)
+            if (package.Status == Status.Booked || package.Status == Status.Transit)
+            {
+                await InitiateRefund(package.Id, token);
+            }
+            if (package.Status == Status.Delivered)
             {
                 throw new PackageNotAlterableException(id);
             }
             _unitOfWork.PackageRepository.DeletePackage(package);
-            await _unitOfWork.SaveAsync();  
+            await _unitOfWork.SaveAsync();
         }
+
 
         public async Task<StandardResponse<(IEnumerable<PackageResponseDto>,MetaData)>> GetAllPackagesAsync(PackageRequestParameter requestParameter, bool trackChanges)
         {
@@ -134,14 +139,14 @@ namespace DropMate.Service.Services
             _unitOfWork.PackageRepository.UpdatePackage(package);
             await _unitOfWork.SaveAsync();
         }
-        public async Task UpdateStatusDelivered(int packageId,int code)
+        public async Task UpdateStatusDelivered(int packageId,int code,string token)
         {
-            //Call the transaction service and trigger payment
             Package package = await GetPackageWithId(packageId, false);
             if (!package.Status.Equals(Status.Transit) || !package.DeliverCode.Equals(code))
             {
                 throw new PackageInvalidCodeException(packageId);
             }
+            await InitiateServicePayment(packageId, token);
             package.Status = Status.Delivered;
             _unitOfWork.PackageRepository.UpdatePackage(package);
             await _unitOfWork.SaveAsync();
@@ -198,6 +203,40 @@ namespace DropMate.Service.Services
             _unitOfWork.PackageRepository.UpdatePackage(package);
             await _unitOfWork.SaveAsync();
             return new StandardResponse<string>(200, true, string.Empty, url);
+        }
+        private async Task InitiateRefund(int id, string token)
+        {
+            PaymentHelper paymentHelper = new(token);
+
+            using(HttpResponseMessage response = await paymentHelper.ApiHelper.GetAsync($"transactions/refund/{id}"))
+            {
+                if(response.IsSuccessStatusCode)
+                {
+                    var content = response.Content;
+                }
+                else
+                {
+                    var reason = response.ReasonPhrase;
+                    throw new PackageNotAlterableException($"Failed to initiate refund. {reason}");
+                }
+            }
+        }
+        private async Task InitiateServicePayment(int id, string token)
+        {
+            PaymentHelper paymentHelper = new(token);
+
+            using (HttpResponseMessage response = await paymentHelper.ApiHelper.GetAsync($"confirm/{id}/{false}"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = response.Content;
+                }
+                else
+                {
+                    var reason = response.ReasonPhrase;
+                    throw new PackageNotAlterableException($"Failed to initiate payment. {reason}");
+                }
+            }
         }
     }
 }

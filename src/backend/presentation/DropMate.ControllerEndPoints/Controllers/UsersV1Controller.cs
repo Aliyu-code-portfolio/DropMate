@@ -25,6 +25,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             _services = services;
         }
 
+        [Authorize]
         [HttpGet]
         [HttpHead]
         public async Task<IActionResult> GetAllUsers([FromQuery] UserRequestParameters requestParameter)

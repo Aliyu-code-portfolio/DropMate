@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
 "/nlog.config"));
 
+
 // Add services to the container.
 builder.Services.ConfigureCors();
 builder.Services.ConfigureDbContext(builder.Configuration);
@@ -16,9 +17,11 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureActionFilter();
 builder.Services.ConfigurePhotoService();
 builder.Services.ConfigureEmailService();
+builder.Services.AddHttpContextAccessor();
 builder.Services.ConfigureApiVersioning();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureSwaggerAuth();
 
 builder.Services.AddControllers(config=>config.RespectBrowserAcceptHeader=true)
     .AddXmlDataContractSerializerFormatters()
@@ -41,8 +44,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

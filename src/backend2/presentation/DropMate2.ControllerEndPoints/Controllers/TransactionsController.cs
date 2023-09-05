@@ -40,11 +40,18 @@ namespace DropMate2.ControllerEndPoints.Controllers
             return Ok(result);
         }
 
-        [HttpGet("confirm/{packageId}")]
+        [HttpGet("confirm/{packageId}/{isComplete}")]
         public async Task<IActionResult> ConfirmTransaction(int packageId, bool isComplete)
         {
             await _services.TransactionService.CompleteTransaction(packageId,isComplete);
             return Ok("Completed and payment disbursed...");
+        }
+        
+        [HttpGet("refund/{userId}/{packageId}")]
+        public async Task<IActionResult> RefundTransaction(int packageId)
+        {
+            await _services.TransactionService.RefundPackagePayment(packageId);
+            return Ok("Completed and payment refunded...");
         }
 
         [HttpPost]

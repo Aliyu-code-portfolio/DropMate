@@ -27,7 +27,6 @@ namespace DropMate.Service.Services
             plan.IsCompleted = Status.Pending;
             _unitOfWork.TravelPlanRepository.CreateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
-            //check if there are unassigned packages in db and autopair 
             TravelPlanResponse planDto = _mapper.Map<TravelPlanResponse>(plan);
             return new StandardResponse<TravelPlanResponse>(201,true,string.Empty,planDto);
         }
@@ -64,15 +63,15 @@ namespace DropMate.Service.Services
             return new StandardResponse<TravelPlanResponse>(200,true, string.Empty,travelPlanDto);
         }
 
-        public async Task UpdateCompleted(int plabId, Status status)
+        public async Task UpdateCompleted(int planId, Status status)
         {
             if(status==Status.Pending || status == Status.Canceled || status == Status.Booked)
-                throw new TravelPlanNotAlterableException(plabId);
+                throw new TravelPlanNotAlterableException(planId);
             if (status == Status.Delivered)
             {
-                await EnsureAllPackagesDelivered(plabId);
+                await EnsureAllPackagesDelivered(planId);
             }
-            TravelPlan plan = await GetTravelPlanWithId(plabId, false);
+            TravelPlan plan = await GetTravelPlanWithId(planId, false);
             plan.IsCompleted = status;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
@@ -84,7 +83,7 @@ namespace DropMate.Service.Services
             TravelPlan plan = await GetTravelPlanWithId(plabId, false);
             if (plan.Packages.Any(p => p.Status!=Status.Delivered) )
             {
-                throw new TravelPlanNotAlterableException(plabId);
+                throw new TravelPlanNotAlterableException("Not all packages have been delivered yet. Complete delivery.");
             }
             plan.IsActive = isActive;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);

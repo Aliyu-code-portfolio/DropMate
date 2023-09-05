@@ -51,7 +51,7 @@ namespace DropMate.ControllerEndPoints.Controllers
 
 
         [HttpGet("{id}/complete")]
-        public async Task<IActionResult> UpdateIsCompleted(int id, Status status)
+        public async Task<IActionResult> UpdateIsCompleted(int id,[FromForm] Status status)
         {
             await _services.TravelPlanService.UpdateCompleted(id, status);
             return Ok();
