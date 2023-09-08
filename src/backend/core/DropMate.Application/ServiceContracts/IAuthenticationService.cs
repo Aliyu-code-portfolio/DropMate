@@ -17,7 +17,7 @@ namespace DropMate.Application.ServiceContracts
         void SendEmailToken(string email, string title, string message);
         Task ConfirmEmailAddress(string email, string token);
         Task ResetPassword(string token,UserLoginDto requestDto);
-        Task ChangePassword(ChangePasswordRequestDto requestDto);
+        Task ChangePassword(string email, ChangePasswordRequestDto requestDto);
         Task<string> GenerateEmailActivationToken(string email);
         Task<string> GeneratePasswordResetToken(string email);
 

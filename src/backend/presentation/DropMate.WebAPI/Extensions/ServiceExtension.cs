@@ -1,4 +1,5 @@
-﻿using DropMate.Application.Common;
+﻿using AspNetCoreRateLimit;
+using DropMate.Application.Common;
 using DropMate.Application.ServiceContracts;
 using DropMate.ControllerEndPoints.ValidationFilter;
 using DropMate.Domain.Models;
@@ -6,6 +7,7 @@ using DropMate.Persistence.Common;
 using DropMate.Service.Manager;
 using DropMate.Service.Services;
 using LoggerService;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +46,7 @@ namespace DropMate.WebAPI.Extensions
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
             });
         }
+        public static void ConfigureCaching(this IServiceCollection services) => services.AddResponseCaching();
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentity<User, IdentityRole>(opt =>
@@ -59,6 +62,39 @@ namespace DropMate.WebAPI.Extensions
                 .AddEntityFrameworkStores<RepositoryContext>()
                 .AddDefaultTokenProviders();
         }
+        public static void ConfigureHttpCacheHeaders(this IServiceCollection services) =>
+            services.AddHttpCacheHeaders(
+                (expirationOpt) =>
+                {
+                    expirationOpt.MaxAge = 65;
+                    expirationOpt.CacheLocation = CacheLocation.Public;
+                },
+                (validationOpt) =>
+                {
+                    validationOpt.MustRevalidate = true;
+                });
+        public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+        {
+            var rateLimitRules = new List<RateLimitRule>
+            {
+                new RateLimitRule
+                {
+                    Endpoint = "*",
+                    Limit = 20,
+                    Period = "5m"
+                }
+            };
+            services.Configure<IpRateLimitOptions>(opt => {
+                opt.GeneralRules =
+            rateLimitRules;
+            });
+            services.AddSingleton<IRateLimitCounterStore,
+            MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        }
+
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
@@ -88,6 +124,7 @@ namespace DropMate.WebAPI.Extensions
             services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "DropMate API", Version = "v1" });
+                opt.SchemaFilter<EnumSchemaFilter>();
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,

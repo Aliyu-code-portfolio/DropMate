@@ -6,8 +6,11 @@ using DropMate.Domain.Models;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.Exceptions.Sub;
+using DropMate.Shared.HelperModels;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
+using System.Numerics;
+using System.Text.Json;
 
 namespace DropMate.Service.Services
 {
@@ -21,9 +24,10 @@ namespace DropMate.Service.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<StandardResponse<TravelPlanResponse>> CreateTravelPlan(TravelPlanRequestDto requestDto)
+        public async Task<StandardResponse<TravelPlanResponse>> CreateTravelPlan(string userId, TravelPlanRequestDto requestDto)
         {
             TravelPlan plan = _mapper.Map<TravelPlan>(requestDto);
+            plan.TravelerId = userId;
             plan.IsCompleted = Status.Pending;
             _unitOfWork.TravelPlanRepository.CreateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
@@ -55,6 +59,12 @@ namespace DropMate.Service.Services
             IEnumerable<TravelPlanResponse> travelPlansDto = _mapper.Map<IEnumerable<TravelPlanResponse>>(travelPlans);
             return new StandardResponse<(IEnumerable<TravelPlanResponse>, MetaData)>(200, true, string.Empty, (travelPlansDto,travelPlans.MetaData));
         }
+        public async Task<StandardResponse<IEnumerable<TravelPlanResponse>>> GetAllTravelPlanToLocation(LagosLocation location, bool trackChanges)
+        {
+            IEnumerable<TravelPlan> travelPlans = await _unitOfWork.TravelPlanRepository.GetTravelPlanByDestinationAsync( location, trackChanges);
+            IEnumerable<TravelPlanResponse> travelPlansDto = _mapper.Map<IEnumerable<TravelPlanResponse>>(travelPlans);
+            return new StandardResponse<IEnumerable<TravelPlanResponse>>(200, true, string.Empty, travelPlansDto);
+        }
 
         public async Task<StandardResponse<TravelPlanResponse>> GetTravelPlanById(int id, bool trackChanges)
         {
@@ -65,8 +75,12 @@ namespace DropMate.Service.Services
 
         public async Task UpdateCompleted(int planId, Status status)
         {
-            if(status==Status.Pending || status == Status.Canceled || status == Status.Booked)
+            if(status==Status.Pending || status == Status.Booked)
                 throw new TravelPlanNotAlterableException(planId);
+            if(status == Status.Canceled)
+            {
+                //refund for each package
+            }
             if (status == Status.Delivered)
             {
                 await EnsureAllPackagesDelivered(planId);
@@ -90,7 +104,7 @@ namespace DropMate.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateTravelPlan(int id, TravelPlanRequestDto requestDto)
+        public async Task UpdateTravelPlan(string userId, int id, TravelPlanRequestDto requestDto)
         {
             TravelPlan travelPlan =await GetTravelPlanWithId(id, false);
             if(travelPlan.Packages.Any())
@@ -98,9 +112,81 @@ namespace DropMate.Service.Services
                 throw new TravelPlanNotAlterableException(id);
             }
             TravelPlan travelPlanForUpdate = _mapper.Map<TravelPlan>(requestDto);
+            travelPlanForUpdate.TravelerId = userId;
+            travelPlanForUpdate.IsCompleted = Status.Pending;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(travelPlanForUpdate);
             await _unitOfWork.SaveAsync();
-            //Check for unpaired packages and pair if they match
+        }
+        public async Task AddPackageToTravelPlan(string userId, int planId, int packageId, string token)
+        {
+            TravelPlan plan = await GetTravelPlanWithId(planId, false);
+            Package package = await _unitOfWork.PackageRepository.GetPackageByIdAsync(packageId, false)
+                ?? throw new PackageNotFoundException(packageId);
+
+            if (!(plan.MaximumPackageWeight <= package.PackageWeight))
+                throw new PackageNotAddedException("The package weight is over the max weight for this travel plan");
+            if (plan.DepartureDateTime > DateTime.Now)
+                throw new PackageNotAddedException("The departure time has elapsed.");
+            if (!(package.PackageOwnerId==userId))
+                throw new PackageNotAddedException("Only the package owner can add this package");
+            package.TravelPlanId = planId;
+            package.Status = Status.Booked;
+            await PayForPackageInAdvance(package.Price, package.PackageOwnerId, plan.TravelerId
+                ,package.Id, plan.Id, token);
+            _unitOfWork.PackageRepository.UpdatePackage(package);
+            await _unitOfWork.SaveAsync();
+        }
+
+        private async Task PayForPackageInAdvance(decimal price, string packageOwner, string travelerId, int packageId, int travelId, string token)
+        {
+            PaymentHelper payment = new(token);
+            StringContent content = new StringContent(JsonSerializer.Serialize(
+                new { paymentAmount=price, recieverWalletID= travelerId, senderWalletID =packageOwner, 
+                    travelPlanId = travelId, packageId=packageId }));
+            using (HttpResponseMessage response =await payment.ApiHelper.PostAsync("transactions", content))
+            {
+                if(response.IsSuccessStatusCode)
+                {
+                    var message = response.Content;
+                }
+                else
+                {
+                    throw new PackageNotAddedException($"Failed to initiate refund. {response.ReasonPhrase}");
+                }
+            }
+        }
+
+        public async Task RemovePackageFromTravelPlan(string userId, int packageId, int planId, string token)
+        {
+            TravelPlan plan = await GetTravelPlanWithId(planId, false);
+            Package package = await _unitOfWork.PackageRepository.GetPackageByIdAsync(packageId, false)
+                ?? throw new PackageNotFoundException(packageId);
+
+            if (!(plan.TravelerId==userId))
+                throw new PackageNotAddedException("Only the traveler can remove this package");
+            package.TravelPlanId = null;
+            package.Status = Status.Pending;
+            await InitiateRefund(packageId, token);
+            _unitOfWork.PackageRepository.UpdatePackage(package);
+            await _unitOfWork.SaveAsync();
+        }
+
+        private async Task InitiateRefund(int id, string token)
+        {
+            PaymentHelper paymentHelper = new(token);
+
+            using (HttpResponseMessage response = await paymentHelper.ApiHelper.PostAsync($"transactions/refund/{id}", new StringContent(null)))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = response.Content;
+                }
+                else
+                {
+                    var reason = response.ReasonPhrase;
+                    throw new PackageNotAddedException($"Failed to initiate refund. {reason}");
+                }
+            }
         }
 
         private async Task<TravelPlan> GetTravelPlanWithId(int id, bool trackChanges)
@@ -118,5 +204,6 @@ namespace DropMate.Service.Services
                 throw new TravelPlanNotAlterableException("Not all packages have been delivered yet. Complete delivery.");
             }
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace DropMate.Shared.Dtos.Request
     {
         [EmailAddress(ErrorMessage ="Email address is invalid")]
         public string Email { get; init; }
+        [PasswordPropertyText]
         public string Password { get; init; }
     }
 }

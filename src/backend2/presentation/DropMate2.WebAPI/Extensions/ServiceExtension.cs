@@ -22,6 +22,14 @@ namespace DropMate2.WebAPI.Extensions
              builder.AllowAnyOrigin()
              .AllowAnyMethod()
              .AllowAnyHeader());
+             options.AddPolicy("ReactPolicy", builder =>
+             {
+                 builder.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+             });
+
          });
         public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
         {

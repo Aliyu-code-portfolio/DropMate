@@ -6,13 +6,15 @@ using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
+    [ApiController]
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/travel-plans")]
-    [ApiController]
     public class TravelPlanV1Controller : ControllerBase
     {
 
@@ -25,6 +27,8 @@ namespace DropMate.ControllerEndPoints.Controllers
 
         [HttpGet]
         [HttpHead]
+        [ResponseCache(CacheProfileName = "20 minutes cache")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllTravelPlans([FromQuery] TravelPlanRequestParameters requestParameters)
         {
             StandardResponse<(IEnumerable<TravelPlanResponse> plans, MetaData metaData)> result = await _services.TravelPlanService
@@ -33,9 +37,13 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(result.Data.plans);
         } 
         
-        [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetAllUserTravelPlans(string id, [FromQuery] TravelPlanRequestParameters requestParameters)
+        [HttpGet("user/id")]
+        [ResponseCache(CacheProfileName = "20 minutes cache")]
+        public async Task<IActionResult> GetAllUserTravelPlans([FromQuery] TravelPlanRequestParameters requestParameters)
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
             StandardResponse<(IEnumerable<TravelPlanResponse> plans, MetaData metaData)> result = await _services.TravelPlanService
                 .GetAllUserTravelPlan(requestParameters,id,false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
@@ -57,7 +65,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/active")]
+        [HttpPost("{id}/active")]
         public async Task<IActionResult> UpdateIsActive(int id, bool isActive)
         {
             await _services.TravelPlanService.UpdateIsActive(id, isActive);
@@ -65,16 +73,44 @@ namespace DropMate.ControllerEndPoints.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTravelPlan([FromBody] TravelPlanRequestDto requestDto)
+        public async Task<IActionResult> CreateTravelPlan([FromForm] TravelPlanRequestDto requestDto)
         {
-            StandardResponse<TravelPlanResponse> plan = await _services.TravelPlanService.CreateTravelPlan(requestDto);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            StandardResponse<TravelPlanResponse> plan = await _services.TravelPlanService.CreateTravelPlan(userId, requestDto);
             return CreatedAtAction(nameof(GetTravelPlanById), new { Id = plan.Data.Id }, plan.Data);
+        }
+        
+        [HttpPost("add-package")]
+        public async Task<IActionResult> AddTravelPlanPackage([FromForm] BookingRequestDto requestDto)
+        {
+            string token = Request.Headers.Authorization;
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            await _services.TravelPlanService.AddPackageToTravelPlan(userId,requestDto.travelPlanId, requestDto.packageId, token);
+            return Ok("Package added successfully");
+        }
+        
+        [HttpPost("remove-package")]
+        public async Task<IActionResult> RemoveTravelPlanPackage([FromForm] BookingRequestDto requestDto)
+        {
+            string token = Request.Headers.Authorization;
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            await _services.TravelPlanService.RemovePackageFromTravelPlan(userId,requestDto.travelPlanId, requestDto.packageId, token);
+            return Ok("Package removed successfully");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTravelPlan(int id, [FromBody] TravelPlanRequestDto requestDto)
+        public async Task<IActionResult> UpdateTravelPlan(int id, [FromForm] TravelPlanRequestDto requestDto)
         {
-            await _services.TravelPlanService.UpdateTravelPlan(id, requestDto);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            await _services.TravelPlanService.UpdateTravelPlan(userId, id, requestDto);
             return Ok();
         }
 

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using DropMate.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DropMate.Domain.Enums;
 
 namespace DropMate.Shared.Dtos.Request
 {
     public record TravelPlanRequestDto
     {
         //*Pull this info from the current logged in user
-        [Required(ErrorMessage = "User ID is required")]
-        public string TravelerId { get; set; }
+        /*[Required(ErrorMessage = "User ID is required")]
+        public string TravelerId { get; set; }*/
 
         [Required(ErrorMessage = "Departure location is required.")]
         public LagosLocation DepartureLocation { get; init; }

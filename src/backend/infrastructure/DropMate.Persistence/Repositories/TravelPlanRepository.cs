@@ -51,8 +51,14 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<IEnumerable<TravelPlan>> GetTravelPlanByDestinationAsync(LagosLocation destination, bool trackChanges)
         {
-            return await FindByCondition(t => !t.IsDeleted && t.IsActive && t.ArrivalLocation.Equals(destination), trackChanges)
+            return await FindByCondition(t => !t.IsDeleted && t.IsActive && t.ArrivalLocation.Equals(destination) && t.DepartureDateTime>DateTime.Now, trackChanges)
                 .Include(t => t.Traveler).ToListAsync();
+        }
+        
+        public async Task<IEnumerable<TravelPlan>> GetTravelPlanPackageByDestinationAsync(LagosLocation destination, bool trackChanges)
+        {
+            return await FindByCondition(t => !t.IsDeleted && t.IsActive && t.ArrivalLocation.Equals(destination) && t.DepartureDateTime>DateTime.Now, trackChanges)
+                .Include(t => t.Packages).ToListAsync();
         }
         
         public async Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges)

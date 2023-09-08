@@ -33,9 +33,10 @@ namespace DropMate.Service.Services
             _photoService = photoService;
             _configuration = configuration;
         }
-        public async Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> CreatePackage(PackageRequestDto requestDto)
+        public async Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> CreatePackage(string userId, PackageRequestDto requestDto)
         {
             Package package = _mapper.Map<Package>(requestDto);
+            package.PackageOwnerId = userId;
             package.Status = Status.Pending;
             package.RecieveCode = Utility.GeneratePackageCode();
             package.DeliverCode = Utility.GeneratePackageCode();
@@ -46,12 +47,13 @@ namespace DropMate.Service.Services
 
             _unitOfWork.PackageRepository.CreatePackage(package);
             await _unitOfWork.SaveAsync();
-
-            //check database for people going towards that route and push notification to them.
             //Feature to add: Distance from traveler to package should be a factor
+
+            //check database for people going towards that route and push send to package owner.
             IEnumerable<TravelPlan> plans = await _unitOfWork.TravelPlanRepository
                 .GetTravelPlanByDestinationAsync(package.ArrivalLocation, false);
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
+            
 
             PackageResponseDto packageDto = _mapper.Map<PackageResponseDto>(package);
             return StandardResponse<(PackageResponseDto,IEnumerable<TravelPlanResponse>)>
@@ -208,7 +210,7 @@ namespace DropMate.Service.Services
         {
             PaymentHelper paymentHelper = new(token);
 
-            using(HttpResponseMessage response = await paymentHelper.ApiHelper.GetAsync($"transactions/refund/{id}"))
+            using(HttpResponseMessage response = await paymentHelper.ApiHelper.PostAsync($"transactions/refund/{id}", new StringContent(null)))
             {
                 if(response.IsSuccessStatusCode)
                 {
@@ -225,7 +227,7 @@ namespace DropMate.Service.Services
         {
             PaymentHelper paymentHelper = new(token);
 
-            using (HttpResponseMessage response = await paymentHelper.ApiHelper.GetAsync($"confirm/{id}/{false}"))
+            using (HttpResponseMessage response = await paymentHelper.ApiHelper.PostAsync($"confirm/{id}/{false}", new StringContent(null)))
             {
                 if (response.IsSuccessStatusCode)
                 {

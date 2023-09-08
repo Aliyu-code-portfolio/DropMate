@@ -8,13 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
+    [ApiController]
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/users")]
-    [ApiController]
     public class UsersV1Controller : ControllerBase
     {
 
@@ -25,9 +27,10 @@ namespace DropMate.ControllerEndPoints.Controllers
             _services = services;
         }
 
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         [HttpGet]
         [HttpHead]
+        [ResponseCache(CacheProfileName= "20 minutes cache")]
         public async Task<IActionResult> GetAllUsers([FromQuery] UserRequestParameters requestParameter)
         {
             StandardResponse<(IEnumerable<UserResponseDto> users,MetaData metaData)> result = await _services.UserService.GetAllUsers(requestParameter,false);
@@ -35,9 +38,12 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(result.Data.users);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUsersById(string id)
+        [HttpGet("id")]
+        public async Task<IActionResult> GetUsersById()
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim  = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
             StandardResponse<UserResponseDto> user = await _services.UserService.GetUserById(id, false);
             return Ok(user);
         }
@@ -49,31 +55,43 @@ namespace DropMate.ControllerEndPoints.Controllers
             return Ok(user);
         }
 
-        [HttpPost("{id}/profile-img")]
-        public async Task<IActionResult> UploadProfileImg(string id, IFormFile file)
+        [HttpPost("id/profile-img")]
+        public async Task<IActionResult> UploadProfileImg(IFormFile file)
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
             StandardResponse<string> result = await _services.UserService.UploadProfileImg(id, file);
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("id")]
         [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateRequestDto requestDto)
+        public async Task<IActionResult> UpdateUser([FromForm] UserUpdateRequestDto requestDto)
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
             await _services.UserService.UpdateUser(id, requestDto);
             return Ok();
         }
 
-        [HttpDelete("{id}/profile-img")]
-        public async Task<IActionResult> DeleteUser(string id)
+        [HttpDelete("id/profile-img")]
+        public async Task<IActionResult> DeleteUser()
         {
-            await _services.UserService.RemoveProfileImg(id);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
+            await _services.UserService.DeleteUser(id, false);
             return Ok();
         }
         
-        [HttpDelete("{id}/")]
-        public async Task<IActionResult> DeleteProfileImg(string id)
+        [HttpDelete("id")]
+        public async Task<IActionResult> DeleteProfileImg()
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string id = userIdClaim.Value;
             await _services.UserService.RemoveProfileImg(id);
             return Ok();
         }

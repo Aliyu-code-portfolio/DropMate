@@ -41,14 +41,15 @@ app.UseRouting();
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
+app.UseCors("ReactPolicy");
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
+/*app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<LocationTracker>("/location"); // Map the SignalR hub to a specific path
     endpoints.MapControllerRoute(
         name: "default",
         pattern: "{controller=tracking}/{action=update}");
-});
+});*/
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

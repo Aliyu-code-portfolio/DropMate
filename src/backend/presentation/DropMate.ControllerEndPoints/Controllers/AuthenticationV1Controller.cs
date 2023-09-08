@@ -3,6 +3,7 @@ using DropMate.ControllerEndPoints.ValidationFilter;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,14 +11,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
+    [ApiController]
     [ApiVersion("1.0")]
     [Route("api/authentication")]
-    [ApiController]
     public class AuthenticationV1Controller : ControllerBase
     {
 
@@ -31,7 +33,7 @@ namespace DropMate.ControllerEndPoints.Controllers
       
         [HttpPost("register")]
         [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> RegisterUser([FromBody] UserCreateRequestDto requestDto)
+        public async Task<IActionResult> RegisterUser([FromForm] UserCreateRequestDto requestDto)
         {
             string token = await _services.AuthenticationService.RegisterUser(requestDto);
 
@@ -44,7 +46,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         
         [HttpPost("register/admin")]
         [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> RegisterAdmin([FromBody] UserCreateRequestDto requestDto)
+        public async Task<IActionResult> RegisterAdmin([FromForm] UserCreateRequestDto requestDto)
         {
             string token = await _services.AuthenticationService.RegisterAdmin(requestDto);
 
@@ -57,7 +59,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         
         [HttpPost("login")]
         [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> Login([FromBody] UserLoginDto requestDto)
+        public async Task<IActionResult> Login([FromForm] UserLoginDto requestDto)
         {
             StandardResponse<(string token, UserResponseDto userData)> result = await _services.AuthenticationService.ValidateAndCreateToken(requestDto);
             return Ok(new {Token = result.Data.token, profile = result.Data.userData});
@@ -111,9 +113,13 @@ namespace DropMate.ControllerEndPoints.Controllers
         }
         
         [HttpGet("change-password")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto requestDto)
         {
-            await _services.AuthenticationService.ChangePassword( requestDto);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userNameClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
+            string email = userNameClaim.Value;
+            await _services.AuthenticationService.ChangePassword(email, requestDto);
             return Ok("Your password has been changed successfully");
         }
 

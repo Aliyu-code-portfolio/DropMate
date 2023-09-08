@@ -35,5 +35,6 @@ namespace DropMate.Shared.Dtos.Response
         public string? EstimatedDuration { get; init; }
 
         public Status Status { get; init; }
+        public TravelPlanResponse TravelPlan { get; set; }
     }
 }

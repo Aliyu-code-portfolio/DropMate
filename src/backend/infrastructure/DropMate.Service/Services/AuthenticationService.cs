@@ -113,7 +113,8 @@ namespace DropMate.Service.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                 new Claim(ClaimTypes.Name,user.UserName)
+                 new Claim(ClaimTypes.Name,user.UserName),
+                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
             IList<string> roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -176,10 +177,10 @@ namespace DropMate.Service.Services
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
-        public async Task ChangePassword(ChangePasswordRequestDto requestDto)
+        public async Task ChangePassword(string email, ChangePasswordRequestDto requestDto)
         {
-            User user = await _userManager.FindByEmailAsync(requestDto.Email)
-                ?? throw new UserNotFoundException(requestDto.Email);
+            User user = await _userManager.FindByEmailAsync(email)
+                ?? throw new UserNotFoundException(email);
             IdentityResult result = await _userManager.ChangePasswordAsync(user, requestDto.OldPassword, requestDto.NewPassword);
             if (!result.Succeeded)
             {

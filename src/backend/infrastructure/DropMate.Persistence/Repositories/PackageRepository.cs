@@ -53,7 +53,8 @@ namespace DropMate.Persistence.Repositories
 
         public async Task<Package> GetPackageByIdAsync(int id, bool trackChanges)
         {
-            return await FindByCondition(p=>p.Id.Equals(id), trackChanges).Where(p=>!p.IsDeleted).FirstOrDefaultAsync();
+            return await FindByCondition(p=>p.Id.Equals(id), trackChanges).Where(p=>!p.IsDeleted)
+                .Include(p => p.TravelPlan).FirstOrDefaultAsync();
         }
 
         public void PermanentDeletePackage(Package package)

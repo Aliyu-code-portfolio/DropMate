@@ -14,9 +14,10 @@ using System.Threading.Tasks;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {
+    [ApiController]
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/reviews")]
-    [ApiController]
     public class ReviewsV1Controller : ControllerBase
     {
 
@@ -29,6 +30,8 @@ namespace DropMate.ControllerEndPoints.Controllers
 
         [HttpGet]
         [HttpHead]
+        [ResponseCache(CacheProfileName = "20 minutes cache")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllReviews([FromQuery]ReviewRequestParameters requestParameters)
         {
             StandardResponse<(IEnumerable<ReviewResponseDto> reviews,MetaData metaData)> result = await _services.ReviewService
@@ -45,7 +48,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview([FromBody] ReviewRequestDto requestDto)
+        public async Task<IActionResult> CreateReview([FromForm] ReviewRequestDto requestDto)
         {
             StandardResponse<ReviewResponseDto> review = await _services.ReviewService.CreateReview(requestDto);
             return CreatedAtAction(nameof(GetReviewById), new { Id = review.Data.Id }, review.Data);

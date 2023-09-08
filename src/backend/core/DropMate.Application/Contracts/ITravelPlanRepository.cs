@@ -9,6 +9,7 @@ namespace DropMate.Application.Contracts
     {
         Task<PagedList<TravelPlan>> GetAllTravelPlanAsync(TravelPlanRequestParameters requestParameters, bool trackChanges);
         Task<IEnumerable<TravelPlan>> GetTravelPlanByDestinationAsync(LagosLocation destination, bool trackChanges);
+        Task<IEnumerable<TravelPlan>> GetTravelPlanPackageByDestinationAsync(LagosLocation destination, bool trackChanges);
         Task<TravelPlan> GetTravelPlanByIdAsync(int id, bool trackChanges);
         Task<PagedList<TravelPlan>> GetAllUserTravelPlanAsync(TravelPlanRequestParameters requestParameters, string userId, bool trackChanges);
         void UpdateTravelPlan(TravelPlan travelPlan);
