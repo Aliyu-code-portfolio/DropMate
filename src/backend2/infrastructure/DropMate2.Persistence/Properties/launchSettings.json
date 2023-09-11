@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "DropMate2.Persistence": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:51397;http://localhost:51398"
+    }
+  }
+}
