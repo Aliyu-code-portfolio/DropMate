@@ -34,7 +34,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<TravelPlanResponse> plans, MetaData metaData)> result = await _services.TravelPlanService
                 .GetAllTravelPlan(requestParameters,false);
             Response.Headers.Add("X-Pagination",JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.plans);
+            return Ok(StandardResponse<IEnumerable<TravelPlanResponse>>.Success("Retrieved successfully", result.Data.plans));
         } 
         
         [HttpGet("user/id")]
@@ -47,7 +47,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<TravelPlanResponse> plans, MetaData metaData)> result = await _services.TravelPlanService
                 .GetAllUserTravelPlan(requestParameters,id,false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.plans);
+            return Ok(StandardResponse<IEnumerable<TravelPlanResponse>>.Success("Retrieved successfully", result.Data.plans));
         }
         
         [HttpGet("{id}")]

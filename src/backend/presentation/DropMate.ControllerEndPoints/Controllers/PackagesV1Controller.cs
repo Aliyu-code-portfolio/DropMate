@@ -35,7 +35,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<PackageResponseDto> packages, MetaData metaData)> result = await _services.PackageService
                 .GetAllPackagesAsync(requestParameter,false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.packages);
+            return Ok(StandardResponse<IEnumerable<PackageResponseDto>>.Success("Retrieved successfully",result.Data.packages));
         }
 
         [HttpGet("user/id")]
@@ -48,7 +48,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<PackageResponseDto> packages, MetaData metaData)> result = await _services.PackageService
                 .GetAllUserPackagesAsync(requestParameter, userId, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result);
+            return Ok(StandardResponse<IEnumerable<PackageResponseDto>>.Success("Retrieved successfully", result.Data.packages));
         }
 
         [HttpGet("plan/{planId}")]

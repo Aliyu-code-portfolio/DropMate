@@ -35,7 +35,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         {
             StandardResponse<(IEnumerable<UserResponseDto> users,MetaData metaData)> result = await _services.UserService.GetAllUsers(requestParameter,false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.users);
+            return Ok(StandardResponse<IEnumerable<UserResponseDto>>.Success("Retrieved successfully", result.Data.users));
         }
 
         [HttpGet("id")]
