@@ -13,5 +13,9 @@ namespace DropMate.Shared.Exceptions.Sub
         {
             
         }
+        public LoginFailedException(string message):base(message)
+        {
+            
+        }
     }
 }

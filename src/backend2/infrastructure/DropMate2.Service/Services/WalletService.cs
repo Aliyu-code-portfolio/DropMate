@@ -28,6 +28,7 @@ namespace DropMate2.Service.Services
 
         public async Task CreateWallet(WalletRequestDto walletDto)
         {
+            _ = await GetWalletWithId(walletDto.Id, false); 
             Wallet wallet = _mapper.Map<Wallet>(walletDto);
             _unitOfWork.WalletRepository.CreateWallet(wallet);
             await _unitOfWork.SaveAsync();

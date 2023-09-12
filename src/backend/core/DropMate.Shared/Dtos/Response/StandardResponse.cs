@@ -9,11 +9,11 @@ namespace DropMate.Shared.Dtos.Response
 {
     public class StandardResponse<T>
     {
-        public T Data { get; set; }
-        public bool Succeeded { get; set; }
-        public string Message { get; set; }
         public int StatusCode { get; set; }
+        public bool Succeeded { get; set; }// take out
+        public string Message { get; set; }
         public DateTime? ExpireDate { get; set; } = DateTime.Now;
+        public T Data { get; set; }
 
 
 

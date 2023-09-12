@@ -40,7 +40,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string encodedToken = System.Text.Encodings.Web.UrlEncoder.Default.Encode(token);
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
 
-            _services.AuthenticationService.SendEmailToken(requestDto.Email,"Confirm Your Email for DropMate", $"Please click on the link to confirm your email address. " + callback_url);
+            _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
             return StatusCode(201,"Account created successfully. Please confirm your email");
         }
         
@@ -53,7 +53,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string encodedToken = System.Text.Encodings.Web.UrlEncoder.Default.Encode(token);
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
 
-            _services.AuthenticationService.SendEmailToken(requestDto.Email, "Confirm Your Email for DropMate", $"Please click on the link to confirm your email address {requestDto.Email}. "+callback_url);
+            _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
             return StatusCode(201, "Account created successfully. Please confirm your email");
         }
         
@@ -62,7 +62,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> Login([FromForm] UserLoginDto requestDto)
         {
             StandardResponse<(string token, UserResponseDto userData)> result = await _services.AuthenticationService.ValidateAndCreateToken(requestDto);
-            return Ok(new {Token = result.Data.token, profile = result.Data.userData});
+            return Ok(new {Token = result.Data.token});
         }
         
         
@@ -74,18 +74,82 @@ namespace DropMate.ControllerEndPoints.Controllers
             string encodedToken = System.Text.Encodings.Web.UrlEncoder.Default.Encode(token);
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{email}/{encodedToken}";
 
-            _services.AuthenticationService.SendEmailToken(email, "Confirm Your Email for DropMate", $"Please click on the link to confirm your email address {email}. " + callback_url);
+            _services.AuthenticationService.SendConfirmationEmail(email, callback_url);
             return StatusCode(200, "Email verification successfully sent. Please confirm your email");
 
         }
         
         [HttpGet("confirm-email/{email}/{token}")]
-        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        public async Task<ContentResult> ConfirmEmail(string email, string token)
         {
             string decodedToken = WebUtility.UrlDecode(token);
             await _services.AuthenticationService.ConfirmEmailAddress(email, decodedToken);
-            //Redirect to your frontend
-            return Ok("Your email has been confirmed successfully");
+             string htmlContent = @"
+                <!DOCTYPE html>
+                    <html lang=""en"">
+                    <head>
+                        <meta charset=""UTF-8"">
+                        <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                        <title>Email Verified</title>
+                        <style>
+                            /* Center the verification container */
+                            body {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                height: 100vh;
+                                margin: 0;
+                            }
+
+                            /* Style for the white background with shadow */
+                            .verification-container {
+                                background-color: #ffffff;
+                                padding: 20px;
+                                text-align: center;
+                                border-radius: 5px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }
+
+                            /* Style for the checkmark icon */
+                            .checkmark {
+                                font-size: 48px;
+                                color: #00cc00; /* Green color for the checkmark */
+                            }
+
+                            /* Style for the ""Email Verified"" text */
+                            .verified-text {
+                                font-size: 24px;
+                                color: #333333;
+                                margin-top: 10px;
+                            }
+
+                            /* Style for the ""Welcome to DropMate Delivery"" text */
+                            .dropmate-text {
+                                font-size: 28px;
+                                color: #333333;
+                                margin-top: 10px;
+                                font-weight: bold;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class=""verification-container"">
+                            <!-- Checkmark icon -->
+                            <div class=""checkmark"">&#10003;</div>
+        
+                            <!-- ""Email Verified"" text -->
+                            <div class=""verified-text"">Verified Successfully</div>
+        
+                            <!-- ""Welcome to DropMate Delivery"" text -->
+                            <div class=""dropmate-text"">Welcome to DropMate Delivery</div>
+                        </div>
+                    </body>
+                    </html>";
+            return new ContentResult
+            {
+                Content = htmlContent,
+                ContentType = "text/html"
+            };
         }
 
         [HttpGet("forget-password/{email}")]
@@ -98,7 +162,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             //Change to call the frontend url for entering new password and resetting with this resetToken passed in the header
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{email}/{encodedToken}";//currently backend url
 
-            _services.AuthenticationService.SendEmailToken(email, "Reset Password for DropMate", $"Please click on the link to reset your password for {email}. " + callback_url);
+            _services.AuthenticationService.SendResetPasswordEmail(email, callback_url);
             return StatusCode(200, "Password reset successfully sent to your email.");
 
         }

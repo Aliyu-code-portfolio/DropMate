@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -76,6 +77,8 @@ namespace DropMate.Service.Services
             {
                 throw new LoginFailedException();
             }
+            if(!(await _userManager.IsEmailConfirmedAsync(user)))
+                throw new LoginFailedException("Email not yet confirm. Check your inbox");
             string token = await CreateToken(user);
             UserResponseDto userDto = _mapper.Map<UserResponseDto>(user);
             return StandardResponse<(string, UserResponseDto)>.Success("Successful", (token, userDto));
@@ -88,10 +91,6 @@ namespace DropMate.Service.Services
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
-        public void SendEmailToken(string email, string title, string message)
-        {
-            _emailService.SendEmail(email, title, message);
-        }
 
         private async Task<string> CreateToken(User user)
         {
@@ -191,6 +190,20 @@ namespace DropMate.Service.Services
                 }
                 throw new PasswordChangeFailedException(errors.TrimEnd(',', ' '));
             }
+        }
+
+        public void SendConfirmationEmail(string email, string callback_url)
+        {
+            string title = "DropMate Confirm Your Email";
+            string body = $"<html><body><br/><br/>Please click to confirm your email address for DropMate Delivery. When you confirm your email you get full access to DropMate services for free.<p/> <a href={callback_url}>Verify Your Email</a> <p/><br/>DropMate is a game-changing delivery platform designed to simplify your life. Say goodbye to the hassles of traditional delivery services and experience a whole new level of convenience. Whether you need groceries, packages, or your favorite takeout, DropMate connects you with a network of reliable couriers who are ready to pick up and drop off your items with lightning speed. With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.</body></html>";
+            _emailService.SendEmail(email, title, body);
+        }
+
+        public void SendResetPasswordEmail(string email, string callback_url)
+        {
+            string title = "DropMate Reset Password";
+            string body = $"<html><body><br/><br/>We hope this message finds you well. We wanted to inform you that a request to reset the password for your DropMate account was received. If you did not initiate this password reset, please disregard this email. Your account security is important to us, and we take all necessary precautions to protect it.<p/>Please click on the link to reset your password. <p/> <a href={callback_url}>Reset Your Password</a> <p/><p/>DropMate is a game-changing delivery platform designed to simplify your life. Say goodbye to the hassles of traditional delivery services and experience a whole new level of convenience. Whether you need groceries, packages, or your favorite takeout, DropMate connects you with a network of reliable couriers who are ready to pick up and drop off your items with lightning speed. With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.</body></html>";
+            _emailService.SendEmail(email, title, body);
         }
     }
 }

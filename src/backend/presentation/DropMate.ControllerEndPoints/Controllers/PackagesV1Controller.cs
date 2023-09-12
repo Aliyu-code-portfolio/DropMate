@@ -91,14 +91,14 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = userIdClaim.Value;
             StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)> result = await _services.PackageService.CreatePackage(userId, requestDto);
-            return CreatedAtAction(nameof(GetPackageById), new { Id = result.Data.Item1.Id }, result.Data.Item2);
+            return CreatedAtAction(nameof(GetPackageById), new { Id = result.Data.Item1.Id }, new { package=result.Data.Item1,travelPlans = result.Data.Item2});
         }
         
         [HttpPost("{id}/package-img")]
         public async Task<IActionResult> UploadPackageImg(int id, IFormFile file)
         {
             StandardResponse<string> result = await _services.PackageService.UploadPackageImg(id,file);
-            return Ok(result);
+            return Ok(new { imgUrl = result });
         }
 
         [HttpPut("{id}")]

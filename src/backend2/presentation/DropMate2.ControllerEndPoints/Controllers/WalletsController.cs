@@ -9,6 +9,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
 {
     [Route("api/wallets")]
     [ApiController]
+    
     public class WalletsController : ControllerBase
     {
         private readonly IServiceManager _services;
@@ -18,8 +19,8 @@ namespace DropMate2.ControllerEndPoints.Controllers
             _services = services;
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetAllWallets([FromQuery] WalletRequestParameter requestParameter)
         {
             var result = await _services.WalletService.GetAllWallets(requestParameter, false);
@@ -28,6 +29,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetWalletById(string id)
         {
             var result = await _services.WalletService.GetWalletById(id, false);
@@ -43,6 +45,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteWallet(string id)
         {
             await _services.WalletService.DeleteWallet(id);

@@ -14,7 +14,8 @@ namespace DropMate.Application.ServiceContracts
         Task<string> RegisterUser(UserCreateRequestDto requestDto);
         Task<string> RegisterAdmin(UserCreateRequestDto requestDto);
         Task<StandardResponse<(string, UserResponseDto)>> ValidateAndCreateToken(UserLoginDto requestDto);
-        void SendEmailToken(string email, string title, string message);
+        void SendConfirmationEmail(string email, string callback_url);
+        void SendResetPasswordEmail(string email, string callback_url);
         Task ConfirmEmailAddress(string email, string token);
         Task ResetPassword(string token,UserLoginDto requestDto);
         Task ChangePassword(string email, ChangePasswordRequestDto requestDto);

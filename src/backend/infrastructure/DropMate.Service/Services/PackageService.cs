@@ -41,19 +41,23 @@ namespace DropMate.Service.Services
             package.RecieveCode = Utility.GeneratePackageCode();
             package.DeliverCode = Utility.GeneratePackageCode();
 
-            var priceAndDuration = CalculateCostOfDelivery(package.DepartureLocation, package.ArrivalLocation, package.PackageWeight);
-            package.Price = priceAndDuration.Item1;
-            package.EstimatedDuration = priceAndDuration.Item2;
+            var distanceAndDuration = CalculateDistanceOfLocations(package.DepartureLocation, package.ArrivalLocation);
+            package.Price = GetPrice(distanceAndDuration.Item1, package.PackageWeight);
+            package.EstimatedDuration = distanceAndDuration.Item2;
 
             _unitOfWork.PackageRepository.CreatePackage(package);
             await _unitOfWork.SaveAsync();
-            //Feature to add: Distance from traveler to package should be a factor
 
             //check database for people going towards that route and push send to package owner.
             IEnumerable<TravelPlan> plans = await _unitOfWork.TravelPlanRepository
                 .GetTravelPlanByDestinationAsync(package.ArrivalLocation, false);
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
-            
+            foreach(TravelPlanResponse response in responseDtos)
+            {
+                var result = CalculateDistanceOfLocations(response.DepartureLocation, package.DepartureLocation);
+                response.DistanceFromPickUp= result.Item1;
+                response.EstimatedPickUpTime= result.Item2;
+            }
 
             PackageResponseDto packageDto = _mapper.Map<PackageResponseDto>(package);
             return StandardResponse<(PackageResponseDto,IEnumerable<TravelPlanResponse>)>
@@ -114,15 +118,21 @@ namespace DropMate.Service.Services
             }
             Package package = _mapper.Map<Package>(requestDto);
             //recalculate prices
-            var priceAndDuration = CalculateCostOfDelivery(package.DepartureLocation, package.ArrivalLocation, package.PackageWeight);
-            package.Price = priceAndDuration.Item1;
-            package.EstimatedDuration = priceAndDuration.Item2;
+            var distanceAndDuration = CalculateDistanceOfLocations(package.DepartureLocation, package.ArrivalLocation);
+            package.Price = GetPrice(distanceAndDuration.Item1, package.PackageWeight); 
+            package.EstimatedDuration = distanceAndDuration.Item2;
             _unitOfWork.PackageRepository.UpdatePackage(package);
             await _unitOfWork.SaveAsync();
             //check database for people going towards that route and push send to package owner.
             IEnumerable<TravelPlan> plans = await _unitOfWork.TravelPlanRepository
                 .GetTravelPlanByDestinationAsync(package.ArrivalLocation, false);
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
+            foreach (TravelPlanResponse response in responseDtos)
+            {
+                var result = CalculateDistanceOfLocations(response.DepartureLocation, package.DepartureLocation);
+                response.DistanceFromPickUp = result.Item1;
+                response.EstimatedPickUpTime = result.Item2;
+            }
 
             PackageResponseDto packageDto = _mapper.Map<PackageResponseDto>(package);
             return StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>
@@ -159,7 +169,7 @@ namespace DropMate.Service.Services
             return await _unitOfWork.PackageRepository.GetPackageByIdAsync(id, trackChanges)
                 ?? throw new PackageNotFoundException(id);
         }
-        private (decimal,string) CalculateCostOfDelivery(LagosLocation origin, LagosLocation destination, PackageWeight weight)
+        private (string,string) CalculateDistanceOfLocations(LagosLocation origin, LagosLocation destination)
         {
             //Use a break point to get the http link if you want to use httpclient instead of this SDK for your map api
             string apiKey = _configuration.GetSection("GoogleApi").Value;
@@ -174,8 +184,7 @@ namespace DropMate.Service.Services
 
             var distance = distanceResponse.Rows[0].Elements[0].distance.Text;
             var estimatedDuration = distanceResponse.Rows[0].Elements[0].duration.Text;
-            decimal price = GetPrice(distance, weight);
-            return (price, estimatedDuration);
+            return (distance, estimatedDuration);
         }
 
         private decimal GetPrice(string distance, PackageWeight weight)

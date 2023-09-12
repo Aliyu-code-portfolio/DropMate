@@ -1,6 +1,7 @@
 ﻿using DropMate2.Application.ServiceContracts;
 using DropMate2.Shared.Dtos.Request;
 using DropMate2.Shared.RequestFeatures;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -8,6 +9,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
 {
     [Route("api/transactions")]
     [ApiController]
+    [Authorize]
     public class TransactionsController : ControllerBase
     {
         private readonly IServiceManager _services;
@@ -18,6 +20,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetAllTransactions([FromQuery] TransactionRequestParameters requestParameter)
         {
             var result = await _services.TransactionService.GetAllTransaction(requestParameter, false);

@@ -62,7 +62,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string id = userIdClaim.Value;
             StandardResponse<string> result = await _services.UserService.UploadProfileImg(id, file);
-            return Ok(result);
+            return Ok(new { imgUrl = result });
         }
 
         [HttpPut("id")]

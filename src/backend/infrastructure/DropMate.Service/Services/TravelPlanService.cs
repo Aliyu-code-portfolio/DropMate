@@ -10,6 +10,7 @@ using DropMate.Shared.HelperModels;
 using DropMate.Shared.RequestFeature;
 using DropMate.Shared.RequestFeature.Common;
 using System.Numerics;
+using System.Text;
 using System.Text.Json;
 
 namespace DropMate.Service.Services
@@ -81,11 +82,11 @@ namespace DropMate.Service.Services
             {
                 //refund for each package
             }
+            TravelPlan plan = await GetTravelPlanWithId(planId, false);
             if (status == Status.Delivered)
             {
                 await EnsureAllPackagesDelivered(planId);
             }
-            TravelPlan plan = await GetTravelPlanWithId(planId, false);
             plan.IsCompleted = status;
             _unitOfWork.TravelPlanRepository.UpdateTravelPlan(plan);
             await _unitOfWork.SaveAsync();
@@ -122,10 +123,11 @@ namespace DropMate.Service.Services
             TravelPlan plan = await GetTravelPlanWithId(planId, false);
             Package package = await _unitOfWork.PackageRepository.GetPackageByIdAsync(packageId, false)
                 ?? throw new PackageNotFoundException(packageId);
-
+            if(plan.Packages.Any(p=>p.Id==package.Id))
+                throw new PackageNotAddedException("The package has already been added to this plan exists");
             if (!(plan.MaximumPackageWeight <= package.PackageWeight))
                 throw new PackageNotAddedException("The package weight is over the max weight for this travel plan");
-            if (plan.DepartureDateTime > DateTime.Now)
+            if (!(plan.DepartureDateTime > DateTime.Now))
                 throw new PackageNotAddedException("The departure time has elapsed.");
             if (!(package.PackageOwnerId==userId))
                 throw new PackageNotAddedException("Only the package owner can add this package");
@@ -139,10 +141,10 @@ namespace DropMate.Service.Services
 
         private async Task PayForPackageInAdvance(decimal price, string packageOwner, string travelerId, int packageId, int travelId, string token)
         {
-            PaymentHelper payment = new(token);
+            PaymentHelper payment = new(token.Split(' ')[1]);
             StringContent content = new StringContent(JsonSerializer.Serialize(
                 new { paymentAmount=price, recieverWalletID= travelerId, senderWalletID =packageOwner, 
-                    travelPlanId = travelId, packageId=packageId }));
+                    travelPlanId = travelId, packageId=packageId }),Encoding.UTF8, "application/json");
             using (HttpResponseMessage response =await payment.ApiHelper.PostAsync("transactions", content))
             {
                 if(response.IsSuccessStatusCode)
@@ -151,7 +153,7 @@ namespace DropMate.Service.Services
                 }
                 else
                 {
-                    throw new PackageNotAddedException($"Failed to initiate refund. {response.ReasonPhrase}");
+                    throw new PackageNotAddedException($"Failed to initiate transaction. {response.ReasonPhrase}");
                 }
             }
         }

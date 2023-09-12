@@ -25,8 +25,8 @@ namespace DropMate.Shared.Dtos.Response
         public PackageWeight MaximumPackageWeight { get; init; }
 
         public bool IsActive { get; init; }
-
-        public decimal Price { get; init; }
+        public string? EstimatedPickUpTime { get; set; }
+        public string? DistanceFromPickUp { get; set; }
         public ICollection<Package> Packages { get; set; }
         public UserResponseDto Traveler { get; init; }
     }
