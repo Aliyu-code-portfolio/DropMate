@@ -12,7 +12,6 @@ namespace DropMate.Shared.Dtos.Request
     {
         [EmailAddress(ErrorMessage ="Email address is invalid")]
         public string Email { get; init; }
-        [PasswordPropertyText]
         public string Password { get; init; }
     }
 }
