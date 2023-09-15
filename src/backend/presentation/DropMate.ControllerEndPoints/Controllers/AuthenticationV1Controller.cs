@@ -2,18 +2,10 @@
 using DropMate.ControllerEndPoints.ValidationFilter;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
-using DropMate.Shared.RequestFeature;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DropMate.ControllerEndPoints.Controllers
 {

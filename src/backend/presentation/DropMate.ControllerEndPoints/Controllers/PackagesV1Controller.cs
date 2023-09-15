@@ -114,7 +114,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         {
             string bearToken = Request.Headers.Authorization;
             await _services.PackageService.DeletePackage(id, bearToken);
-            return Ok("Refunded and deleted successsfully");
+            return Ok("Package Deleted Successsfully");
         }
         [HttpOptions]
         public IActionResult Options()

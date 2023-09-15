@@ -1,9 +1,8 @@
-﻿using DropMate.Application.ServiceContracts;
-using Microsoft.Extensions.Configuration;
+﻿using DropMate2.Application.ServiceContracts;
 using System.Net;
 using System.Net.Mail;
 
-namespace DropMate.Service.Services
+namespace DropMate2.Service.Services
 {
     public class EmailService : IEmailService
     {

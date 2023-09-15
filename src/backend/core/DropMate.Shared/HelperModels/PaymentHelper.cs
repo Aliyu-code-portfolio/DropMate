@@ -10,14 +10,15 @@ namespace DropMate.Shared.HelperModels
     public class PaymentHelper
     {
         public HttpClient ApiHelper { get; set; }
-        public PaymentHelper(string token)
+        public PaymentHelper(string token="")
         {
             ApiHelper = new()
             {
                 BaseAddress = new Uri("https://localhost:7204/api/")
             };
             ApiHelper.DefaultRequestHeaders.Accept.Clear();
-            ApiHelper.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if(!string.IsNullOrEmpty(token))
+                 ApiHelper.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             ApiHelper.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
     }

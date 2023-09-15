@@ -20,11 +20,14 @@ namespace DropMate2.Service.Services
         public IUnitOfWork _unitOfWork;
         public IMapper _mapper;
         public PayStackHelper PayStackHelper;
-        public DepositService(IUnitOfWork unitOfWork, IMapper mapper, PayStackHelper payStackHelper)
+        private readonly IEmailService _emailService;
+
+        public DepositService(IUnitOfWork unitOfWork, IMapper mapper, PayStackHelper payStackHelper, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             PayStackHelper = payStackHelper;
+            _emailService = emailService;
         }
 
 
@@ -58,7 +61,7 @@ namespace DropMate2.Service.Services
             return StandardResponse<DepositResponseDto>.Success("Successfully retrieved deposit", responseDto);
         }
         //PayStack inplementations
-        public async Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto depositRequest)
+        public async Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto depositRequest, string email)
         {
             _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(depositRequest.WalletId, false)
                 ?? throw new WalletNotFoundException(depositRequest.WalletId);
@@ -98,9 +101,12 @@ namespace DropMate2.Service.Services
             };
             _unitOfWork.InitializedPaymentRepository.CreateInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
+            sendEmailWithPaymentLink(email ,initializePaymentResponse.data.authorization_url);
             return StandardResponse<Data>
                 .Success("Successfully initialized a payment... Continue to check out using url provided", initializePaymentResponse.data);
         }
+
+
         public async Task CompleteDeposit(string paymentId)
         {
             InitializedPayment initializedPayment =await _unitOfWork.InitializedPaymentRepository
@@ -142,5 +148,13 @@ namespace DropMate2.Service.Services
             return await _unitOfWork.DepositRepository.GetDepositeByIdAsync(id, trackChanges)
                 ?? throw new DepositNotFoundException(id);
         }
+        private void sendEmailWithPaymentLink(string email, string authorization_url)
+        {
+            string logoUrl = "https://res.cloudinary.com/djbkvjfxi/image/upload/v1694601350/uf4xfoda2c4z0exly8nx.png";
+            string title = "DropMate Deposit Link";
+            string body = $"<html><body><br/><br/>We hope this message finds you well. We received your request to deposit into your wallet on DropMate.<br/>Please use the link below to complete your payment to fund your DropMate wallet <p/> <a href={authorization_url}>Complete your deposit</a> <p/> With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.<p/><img src={logoUrl}></body></html>";
+            _emailService.SendEmail(email, title, body);
+        }
+        
     }
 }
