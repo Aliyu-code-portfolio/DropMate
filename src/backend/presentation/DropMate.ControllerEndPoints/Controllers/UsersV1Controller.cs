@@ -61,8 +61,8 @@ namespace DropMate.ControllerEndPoints.Controllers
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string id = userIdClaim.Value;
-            StandardResponse<string> result = await _services.UserService.UploadProfileImg(id, file);
-            return Ok(new { imgUrl = result });
+            string result = await _services.UserService.UploadProfileImg(id, file);
+            return Ok(StandardResponse<object>.Success("Image uploaded successfully", new { imgUrl = result }, 200));
         }
 
         [HttpPut("id")]
@@ -73,7 +73,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string id = userIdClaim.Value;
             await _services.UserService.UpdateUser(id, requestDto);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("User updated successfully", null, 200));
         }
 
         [HttpDelete("id/profile-img")]
@@ -83,7 +83,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string id = userIdClaim.Value;
             await _services.UserService.DeleteUser(id, false);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Image deleted successfully", null, 200));
         }
         
         [HttpDelete("id")]
@@ -93,7 +93,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string id = userIdClaim.Value;
             await _services.UserService.RemoveProfileImg(id);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("User deleted successfully", null, 200));
         }
         [HttpOptions]
         public IActionResult Options()

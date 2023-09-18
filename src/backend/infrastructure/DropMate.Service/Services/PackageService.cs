@@ -24,13 +24,15 @@ namespace DropMate.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public PackageService(IUnitOfWork unitOfWork, IMapper mapper,IPhotoService photoService, IConfiguration configuration)
+        public PackageService(IUnitOfWork unitOfWork, IMapper mapper,IPhotoService photoService,IEmailService emailService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _photoService = photoService;
+            _emailService = emailService;
             _configuration = configuration;
         }
         public async Task<StandardResponse<(PackageResponseDto, IEnumerable<TravelPlanResponse>)>> CreatePackage(string userId, PackageRequestDto requestDto)
@@ -154,6 +156,8 @@ namespace DropMate.Service.Services
         public async Task UpdateStatusDelivered(int packageId,int code,string token)
         {
             Package package = await GetPackageWithId(packageId, false);
+            User packageOwner = await _unitOfWork.UserRepository.GetByIdAsync(package.PackageOwnerId, false)
+                ?? throw new UserNotFoundException(package.PackageOwnerId);
             if (!package.Status.Equals(Status.Transit) || !package.DeliverCode.Equals(code))
             {
                 throw new PackageInvalidCodeException(packageId);
@@ -161,6 +165,7 @@ namespace DropMate.Service.Services
             await InitiateServicePayment(packageId, token);
             package.Status = Status.Delivered;
             _unitOfWork.PackageRepository.UpdatePackage(package);
+            sendPackageDeliveredEmail(packageOwner.Email, package.ProductName);
             await _unitOfWork.SaveAsync();
         }
 
@@ -193,7 +198,13 @@ namespace DropMate.Service.Services
             decimal price = 250 * distanceInDigits *(int)weight;
             return price;
         }
-
+        private void sendPackageDeliveredEmail(string email, string packageName)
+        {
+            string logoUrl = "https://res.cloudinary.com/djbkvjfxi/image/upload/v1694601350/uf4xfoda2c4z0exly8nx.png";
+            string title = "Your DropMate Package Delivered";
+            string body = $"<html><body><br/><br/>We are pleased to inform you that your package {packageName} have been delivered to it's destination. Please don't hesitate to reach out to us at care@dropmate.com for any conplaints or enquires<p/><br/> With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.<p/><img src={logoUrl}></body></html>";
+            _emailService.SendEmail(email, title, body);
+        }
         private static string SplitCamelCaseWords(string input)
         {
             string pattern = @"(?<!^)(?=[A-Z])"; // Look for positions before uppercase letters (except at the beginning)

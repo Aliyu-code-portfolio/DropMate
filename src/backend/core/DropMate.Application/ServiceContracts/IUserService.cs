@@ -12,7 +12,7 @@ namespace DropMate.Application.ServiceContracts
         Task<StandardResponse<UserResponseDto>> GetUserByEmail(string email, bool trackChanges);
         Task<StandardResponse<(IEnumerable<UserResponseDto> users, MetaData metaData)>> GetAllUsers(UserRequestParameters requestParameter, bool trackChanges);
         Task<StandardResponse<UserResponseDto>> CreateUser(UserCreateRequestDto requestDto);
-        Task<StandardResponse<string>> UploadProfileImg(string id, IFormFile file);
+        Task<string> UploadProfileImg(string id, IFormFile file);
         Task RemoveProfileImg(string id);
         Task UpdateUser(string id, UserUpdateRequestDto requestDto);
         Task DeleteUser(string id, bool trackChanges);

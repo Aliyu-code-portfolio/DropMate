@@ -3,6 +3,7 @@ using DropMate2.Application.ServiceContracts;
 using DropMate2.LoggerService;
 using DropMate2.Persistence.Common;
 using DropMate2.Service.Manager;
+using DropMate2.Service.Services;
 using DropMate2.Shared.HelperModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,7 @@ namespace DropMate2.WebAPI.Extensions
         public static void ConfigureLoggerManager(this IServiceCollection services) => services.AddSingleton<ILoggerManager, LoggerManager>();
         public static void ConfigureServiceManager(this IServiceCollection services)=> services.AddScoped<IServiceManager,ServiceManager>();
         public static void ConfigurePayStackHelper(this IServiceCollection services) => services.AddSingleton<PayStackHelper>();
+        public static void ConfigureEmailService(this IServiceCollection services) => services.AddScoped<IEmailService, EmailService>();
         public static void ConfigureIdentityService(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");

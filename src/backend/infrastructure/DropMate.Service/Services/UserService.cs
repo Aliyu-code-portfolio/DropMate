@@ -88,14 +88,14 @@ namespace DropMate.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<StandardResponse<string>> UploadProfileImg(string id, IFormFile file)
+        public async Task<string> UploadProfileImg(string id, IFormFile file)
         {
             User user = await GetUserWithId(id, false);
             string url = _photoService.UploadPhoto(file, id, "DropMateProfileImages");
             user.ProfilePicURL = url;
             _unitOfWork.UserRepository.UpdateUser(user);
             await _unitOfWork.SaveAsync();
-            return new StandardResponse<string>(200, true, string.Empty, url);
+            return url;
         }
 
         private async Task<User> GetUserWithId(string id, bool trackChanges)

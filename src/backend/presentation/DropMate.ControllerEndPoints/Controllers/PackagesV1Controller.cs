@@ -1,5 +1,4 @@
 ﻿using DropMate.Application.ServiceContracts;
-using DropMate.Domain.Enums;
 using DropMate.Shared.Dtos.Request;
 using DropMate.Shared.Dtos.Response;
 using DropMate.Shared.RequestFeature;
@@ -58,7 +57,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<PackageResponseDto>packages, MetaData metaData)> result = await _services.PackageService
                 .GetAllTravelPlanPackagesAsync(requestParameter, planId, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result);
+            return Ok(StandardResponse<IEnumerable<PackageResponseDto>>.Success("Retrieved successfully", result.Data.packages));
         }
 
         [HttpGet("{id}")]
@@ -73,7 +72,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> UpdateRecievedStatus(int id,int code)
         {
             await _services.PackageService.UpdateStatusRecieved(id,code);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Package has been received successfully", null, 200));
         }
         
         [HttpGet("{id}/deliver")]
@@ -81,7 +80,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         {
             string token = Request.Headers.Authorization;
             await _services.PackageService.UpdateStatusDelivered(id,code, token);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Package has been delivered successfully", null, 200));
         }
 
         [HttpPost]
@@ -98,14 +97,14 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> UploadPackageImg(int id, IFormFile file)
         {
             StandardResponse<string> result = await _services.PackageService.UploadPackageImg(id,file);
-            return Ok(new { imgUrl = result });
+            return Ok(StandardResponse<object>.Success("Image uploaded successfully", new { imgUrl = result }, 200));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePackage(int id, [FromForm] PackageRequestDto requestDto)
         {
             await _services.PackageService.UpdatePackage(id, requestDto);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Package updated successfully", null, 200));
         }
 
         [Authorize]
@@ -114,7 +113,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         {
             string bearToken = Request.Headers.Authorization;
             await _services.PackageService.DeletePackage(id, bearToken);
-            return Ok("Package Deleted Successsfully");
+            return Ok(StandardResponse<string>.Success("Package deleted successfully", null, 201));
         }
         [HttpOptions]
         public IActionResult Options()

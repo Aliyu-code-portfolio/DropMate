@@ -27,7 +27,7 @@ namespace DropMate.Service.Manager
         {
             _userService = new Lazy<IUserService>(()=> new UserService(unitOfWork, mapper,photoService));
             _travelPlanService = new Lazy<ITravelPlanService>(()=> new TravelPlanService(unitOfWork,mapper));
-            _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper, photoService, configuration));
+            _packageService = new Lazy<IPackageService>(()=> new PackageService(unitOfWork,mapper, photoService,mailService, configuration));
             _reviewService = new Lazy<IReviewService>(() => new ReviewService(unitOfWork, mapper));
             _authenticationService =  new Lazy<IAuthenticationService>(()=>new AuthenticationService(unitOfWork,mapper,userManager,mailService,configuration));
         }

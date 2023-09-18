@@ -1,5 +1,7 @@
-﻿using DropMate.Application.ServiceContracts;
+﻿using DropMate.Application.Common;
+using DropMate.Application.ServiceContracts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,10 +10,12 @@ namespace DropMate.Service.Services
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _configuration;
+        private readonly ILoggerManager _logger;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, ILoggerManager logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public void SendEmail(string toAddress, string subject, string body)
@@ -34,8 +38,14 @@ namespace DropMate.Service.Services
                 mailMessage.Subject = subject;
                 mailMessage.Body = body;
                 mailMessage.IsBodyHtml = true;
-                
-                smtpClient.Send(mailMessage);
+                try
+                {
+                    smtpClient.Send(mailMessage);
+
+                }catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to send email at {DateTime.Now}. Here are details of the error\n {ex}");
+                }
             }
         }
     }

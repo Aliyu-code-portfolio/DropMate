@@ -16,7 +16,7 @@ namespace DropMate2.Application.ServiceContracts
         Task<StandardResponse<(IEnumerable<DepositResponseDto> deposits, MetaData metaData)>> GetAllDeposit(DepositRequestParameter requestParameters, bool trackChanges);
         Task<StandardResponse<(IEnumerable<DepositResponseDto> deposits, MetaData metaData)>> GetAllWalletDeposit(DepositRequestParameter requestParameters, string wallerId, bool trackChanges);
         Task<StandardResponse<DepositResponseDto>> GetDepositById(int id, bool trackChanges);
-        Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto transaction);
+        Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto transaction,string email, string userId);
         Task CompleteDeposit(string referenceCode);
         Task DeleteDeposit(int id);
     }

@@ -61,15 +61,15 @@ namespace DropMate2.Service.Services
             return StandardResponse<DepositResponseDto>.Success("Successfully retrieved deposit", responseDto);
         }
         //PayStack inplementations
-        public async Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto depositRequest, string email)
+        public async Task<StandardResponse<Data>> InitializeDeposit(DepositRequestDto depositRequest, string email, string userId)
         {
-            _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(depositRequest.WalletId, false)
-                ?? throw new WalletNotFoundException(depositRequest.WalletId);
+            _ = await _unitOfWork.WalletRepository.GetWalletByIdAsync(userId, false)
+                ?? throw new WalletNotFoundException(userId);
             string initPayId = Guid.NewGuid().ToString();
             InitializePaymentResponseDto initializePaymentResponse;
             InitializePaymentRequestDto initializePaymentRequest = new()
             {
-                email = depositRequest.Email,
+                email = email,
                 amount = depositRequest.Amount.ToString()+"00",
                 callback_url = "https://bit.ly/paystack1123"//use this endpoint to call your endpoint /deposits/confirm/{initPayId}  to verify the payment made
             };
@@ -93,15 +93,16 @@ namespace DropMate2.Service.Services
             InitializedPayment initializedPayment = new()
             {
                 Id = initPayId,
-                WalletId = depositRequest.WalletId,
+                WalletId = userId,
                 Authorization_url = initializePaymentResponse.data.authorization_url,
                 Amount = depositRequest.Amount,
                 Access_code = initializePaymentResponse.data.access_code,
-                Reference = initializePaymentResponse.data.reference
+                Reference = initializePaymentResponse.data.reference,
+                Email = email
             };
             _unitOfWork.InitializedPaymentRepository.CreateInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
-            sendEmailWithPaymentLink(email ,initializePaymentResponse.data.authorization_url);
+            sendPaymentLinkEmail(email ,initializePaymentResponse.data.authorization_url, depositRequest.Amount);
             return StandardResponse<Data>
                 .Success("Successfully initialized a payment... Continue to check out using url provided", initializePaymentResponse.data);
         }
@@ -141,18 +142,25 @@ namespace DropMate2.Service.Services
             _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
             _unitOfWork.InitializedPaymentRepository.DeleteInitializedPayment(initializedPayment);
             await _unitOfWork.SaveAsync();
-            //send email receipt here
+            sendPaymentMadeEmail(initializedPayment.Email, initializedPayment.Amount);
         }
         private async Task<Deposit> GetDepositWithId(int id, bool trackChanges)
         {
             return await _unitOfWork.DepositRepository.GetDepositeByIdAsync(id, trackChanges)
                 ?? throw new DepositNotFoundException(id);
         }
-        private void sendEmailWithPaymentLink(string email, string authorization_url)
+        private void sendPaymentLinkEmail(string email, string authorization_url, decimal amount)
         {
             string logoUrl = "https://res.cloudinary.com/djbkvjfxi/image/upload/v1694601350/uf4xfoda2c4z0exly8nx.png";
             string title = "DropMate Deposit Link";
-            string body = $"<html><body><br/><br/>We hope this message finds you well. We received your request to deposit into your wallet on DropMate.<br/>Please use the link below to complete your payment to fund your DropMate wallet <p/> <a href={authorization_url}>Complete your deposit</a> <p/> With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.<p/><img src={logoUrl}></body></html>";
+            string body = $"<html><body><br/><br/>We hope this message finds you well. We received your request to deposit into your wallet on DropMate.<br/>Please use the link below to complete your payment to fund your DropMate wallet <p/><br><strong>Amount<strong>:{amount}<br><a href={authorization_url}>Complete your deposit</a> <p/> With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.<p/><img src={logoUrl}></body></html>";
+            _emailService.SendEmail(email, title, body);
+        }
+        private void sendPaymentMadeEmail(string email, decimal amount)
+        {
+            string logoUrl = "https://res.cloudinary.com/djbkvjfxi/image/upload/v1694601350/uf4xfoda2c4z0exly8nx.png";
+            string title = "DropMate Deposit Completed";
+            string body = $"<html><body><br/><br/>We received the deposit of {amount} into your wallet on DropMate.<p/> With real-time tracking, secure payments, and a seamless user interface, DropMate ensures that your deliveries are not only efficient but also stress-free. It's time to embrace a smarter way to send and receive goods – it's time for DropMate.<p/><br/><br/>With Love from the DropMate Team<p/>Thank you for choosing DropMate.<p/><img src={logoUrl}></body></html>";
             _emailService.SendEmail(email, title, body);
         }
         

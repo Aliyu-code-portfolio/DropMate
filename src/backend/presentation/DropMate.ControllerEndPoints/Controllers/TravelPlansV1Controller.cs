@@ -62,14 +62,14 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> UpdateIsCompleted(int id,[FromForm] Status status)
         {
             await _services.TravelPlanService.UpdateCompleted(id, status);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Travel plan staatus is changed successfully", null, 200));
         }
 
         [HttpPost("{id}/active")]
         public async Task<IActionResult> UpdateIsActive(int id, bool isActive)
         {
             await _services.TravelPlanService.UpdateIsActive(id, isActive);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Travel plan active status changed successfully", null, 200));
         }
 
         [HttpPost]
@@ -90,7 +90,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = userIdClaim.Value;
             await _services.TravelPlanService.AddPackageToTravelPlan(userId,requestDto.travelPlanId, requestDto.packageId, token);
-            return Ok("Package added successfully");
+            return Ok(StandardResponse<string>.Success("Package added successfully", null, 200));
         }
         
         [HttpPost("remove-package")]
@@ -101,7 +101,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = userIdClaim.Value;
             await _services.TravelPlanService.RemovePackageFromTravelPlan(userId,requestDto.travelPlanId, requestDto.packageId, token);
-            return Ok("Package removed successfully");
+            return Ok(StandardResponse<string>.Success("Package removed successfully", null, 200));
         }
 
         [HttpPut("{id}")]
@@ -111,14 +111,14 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = userIdClaim.Value;
             await _services.TravelPlanService.UpdateTravelPlan(userId, id, requestDto);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Travel plan updated successfully", null, 200));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTravelPlan(int id)
         {
             await _services.TravelPlanService.DeleteTravelPlan(id);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Travel plan deleted successfully", null, 200));
         }
         [HttpOptions]
         public IActionResult Options()

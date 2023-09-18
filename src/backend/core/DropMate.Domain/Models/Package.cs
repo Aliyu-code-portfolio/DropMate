@@ -7,6 +7,8 @@ namespace DropMate.Domain.Models
 {
     public class Package:BaseEntity
     {
+        [Required(ErrorMessage = "Product name is required")]
+        public string ProductName { get; set; }
         [ForeignKey(nameof(TravelPlan))]
         public int? TravelPlanId { get; set; }
 

@@ -13,6 +13,7 @@ builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.ConfigureUnitOfWork();
 builder.Services.ConfigureLoggerManager();
 builder.Services.ConfigureServiceManager();
+builder.Services.ConfigureEmailService();
 builder.Services.ConfigurePayStackHelper();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddSignalR();

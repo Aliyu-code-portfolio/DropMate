@@ -33,7 +33,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
 
             _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
-            return StatusCode(201,"Account created successfully. Please confirm your email");
+            return StatusCode(201,StandardResponse<string>.Success("Account created successfully. Please confirm your email",null,201));
         }
         
         [HttpPost("register/admin")]
@@ -46,7 +46,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
 
             _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
-            return StatusCode(201, "Account created successfully. Please confirm your email");
+            return StatusCode(201, StandardResponse<string>.Success("Account created successfully. Please confirm your email", null, 201));
         }
         
         [HttpPost("login")]
@@ -54,7 +54,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> Login([FromForm] UserLoginDto requestDto)
         {
             StandardResponse<(string token, UserResponseDto userData)> result = await _services.AuthenticationService.ValidateAndCreateToken(requestDto);
-            return Ok(new {Token = result.Data.token});
+            return Ok(StandardResponse<object>.Success("Login successful", new { Token = result.Data.token }, 200));
         }
         
         
@@ -67,7 +67,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{email}/{encodedToken}";
 
             _services.AuthenticationService.SendConfirmationEmail(email, callback_url);
-            return StatusCode(200, "Email verification successfully sent. Please confirm your email");
+            return StatusCode(200, StandardResponse<string>.Success("Email verification successfully sent. Please confirm your email", null, 200));
 
         }
         
@@ -155,7 +155,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{email}/{encodedToken}";//currently backend url
 
             _services.AuthenticationService.SendResetPasswordEmail(email, callback_url);
-            return StatusCode(200, "Password reset successfully sent to your email.");
+            return StatusCode(200, StandardResponse<string>.Success("Password reset successfully sent to your email.", null, 200));
 
         }
 
@@ -165,7 +165,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             string decodedToken = WebUtility.UrlDecode(token);
 
             await _services.AuthenticationService.ResetPassword(decodedToken, requestDto);
-            return Ok("Your password has been reset successfully");
+            return Ok(StandardResponse<string>.Success("Your password has been reset successfully", null, 200));
         }
         
         [HttpGet("change-password")]
@@ -176,7 +176,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var userNameClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
             string email = userNameClaim.Value;
             await _services.AuthenticationService.ChangePassword(email, requestDto);
-            return Ok("Your password has been changed successfully");
+            return Ok(StandardResponse<string>.Success("Your password has been changed successfully", null, 201));
         }
 
     }

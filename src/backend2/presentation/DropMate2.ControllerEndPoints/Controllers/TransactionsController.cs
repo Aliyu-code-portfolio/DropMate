@@ -1,8 +1,10 @@
 ﻿using DropMate2.Application.ServiceContracts;
 using DropMate2.Shared.Dtos.Request;
+using DropMate2.Shared.Dtos.Response;
 using DropMate2.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DropMate2.ControllerEndPoints.Controllers
@@ -25,15 +27,18 @@ namespace DropMate2.ControllerEndPoints.Controllers
         {
             var result = await _services.TransactionService.GetAllTransaction(requestParameter, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.transactions);
+            return Ok(StandardResponse<IEnumerable<TransactionResponseDto>>.Success("Retrieved successfully", result.Data.transactions, 200));
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetAllTransactions(string userId, [FromQuery] TransactionRequestParameters requestParameter)
+        [HttpGet("user/id")]
+        public async Task<IActionResult> GetAllUserTransactions([FromQuery] TransactionRequestParameters requestParameter)
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
             var result = await _services.TransactionService.GetAllUserTransaction(requestParameter, userId, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.transactions);
+            return Ok(StandardResponse<IEnumerable<TransactionResponseDto>>.Success("Retrieved successfully", result.Data.transactions, 200));
         }
 
         [HttpGet("{id}")]
@@ -47,14 +52,14 @@ namespace DropMate2.ControllerEndPoints.Controllers
         public async Task<IActionResult> ConfirmTransaction(int packageId, bool isComplete)
         {
             await _services.TransactionService.CompleteTransaction(packageId,isComplete);
-            return Ok("Completed and payment disbursed...");
+            return Ok(StandardResponse<string>.Success("Payment disbursed successfully", null, 200));
         }
         
-        [HttpPost("refund/{userId}/{packageId}")]
+        [HttpPost("refund/{packageId}")]
         public async Task<IActionResult> RefundTransaction(int packageId)
         {
             await _services.TransactionService.RefundPackagePayment(packageId);
-            return Ok("Completed and payment refunded...");
+            return Ok(StandardResponse<string>.Success("Payment refunded successfully", null, 200));
         }
 
         [HttpPost]
@@ -65,17 +70,18 @@ namespace DropMate2.ControllerEndPoints.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateTransaction(int id, [FromBody]TransactionRequestDto requestDto)
         {
             await _services.TransactionService.UpdateTransaction(id, requestDto);
-            return Ok("Successfully updated");
+            return Ok(StandardResponse<string>.Success("Transaction updated successfully", null, 200));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransaction(int id)
         {
             await _services.TransactionService.DeleteTransaction(id);
-            return NoContent();
+            return Ok(StandardResponse<string>.Success("Transaction deleted successfully", null, 200));
         }
     }
 }

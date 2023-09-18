@@ -12,10 +12,8 @@ namespace DropMate.Shared.Dtos.Request
 {
     public record PackageRequestDto
     {
-
-        //*Pull this info from the current logged in user
-        /*[Required(ErrorMessage = "User ID is required")]
-        public string PackageOwnerId { get; init; }*/
+        [Required(ErrorMessage = "Product name is required")]
+        public string ProductName { get; init; }
 
         [Required(ErrorMessage = "Delivery contact name is required.")]
         [MaxLength(50, ErrorMessage = "Maximum length is 50")]

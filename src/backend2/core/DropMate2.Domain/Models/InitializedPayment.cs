@@ -8,6 +8,7 @@ namespace DropMate2.Domain.Models
     {
         [Key]
         public string Id { get; set; }
+        public string Email { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; }
         public string WalletId { get; set; }

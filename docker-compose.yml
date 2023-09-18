@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  dropmate.webapi:
+    image: ${DOCKER_REGISTRY-}dropmatewebapi
+    build:
+      context: .
+      dockerfile: src/backend/presentation/DropMate.WebAPI/Dockerfile
+
+  dropmate2.webapi:
+    image: ${DOCKER_REGISTRY-}dropmate2webapi
+    build:
+      context: .
+      dockerfile: src/backend2/presentation/DropMate2.WebAPI/Dockerfile
+

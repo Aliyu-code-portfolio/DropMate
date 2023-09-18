@@ -8,7 +8,6 @@ namespace DropMate.Shared.Dtos.Request
 {
     public record ChangePasswordRequestDto
     {
-        //public string Email { get; init; }
         public string OldPassword { get; init; }
         public string NewPassword { get; init; }
     }

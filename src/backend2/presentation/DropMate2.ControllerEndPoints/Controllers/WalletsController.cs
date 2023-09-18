@@ -1,8 +1,10 @@
 ﻿using DropMate2.Application.ServiceContracts;
 using DropMate2.Shared.Dtos.Request;
+using DropMate2.Shared.Dtos.Response;
 using DropMate2.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DropMate2.ControllerEndPoints.Controllers
@@ -25,14 +27,17 @@ namespace DropMate2.ControllerEndPoints.Controllers
         {
             var result = await _services.WalletService.GetAllWallets(requestParameter, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.wallets);
+            return Ok(StandardResponse<IEnumerable<WalletResponseDto>>.Success("Retrieved successfully", result.Data.wallets, 200));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("id")]
         [Authorize]
-        public async Task<IActionResult> GetWalletById(string id)
+        public async Task<IActionResult> GetWalletById()
         {
-            var result = await _services.WalletService.GetWalletById(id, false);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            var result = await _services.WalletService.GetWalletById(userId, false);
             return Ok(result);
         }
 
@@ -44,11 +49,14 @@ namespace DropMate2.ControllerEndPoints.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("id")]
         [Authorize]
-        public async Task<IActionResult> DeleteWallet(string id)
+        public async Task<IActionResult> DeleteWallet()
         {
-            await _services.WalletService.DeleteWallet(id);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            await _services.WalletService.DeleteWallet(userId);
             return NoContent();
         }
     }

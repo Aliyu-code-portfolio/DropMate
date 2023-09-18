@@ -1,8 +1,10 @@
 ﻿using DropMate2.Application.ServiceContracts;
 using DropMate2.Shared.Dtos.Request;
+using DropMate2.Shared.Dtos.Response;
 using DropMate2.Shared.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DropMate2.ControllerEndPoints.Controllers
@@ -25,15 +27,18 @@ namespace DropMate2.ControllerEndPoints.Controllers
         {
             var result = await _services.DepositService.GetAllDeposit(requestParameter, false);
             Response.Headers.Add("X-Pagination",JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.deposits);
+            return Ok(StandardResponse<IEnumerable<DepositResponseDto>>.Success("Retrieved successfully", result.Data.deposits, 200));
         }
         
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetAllUserDeposits(string userId, [FromQuery]DepositRequestParameter requestParameter)
+        [HttpGet("user/id")]
+        public async Task<IActionResult> GetAllUserDeposits([FromQuery]DepositRequestParameter requestParameter)
         {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
             var result = await _services.DepositService.GetAllWalletDeposit(requestParameter,userId, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.deposits);
+            return Ok(StandardResponse<IEnumerable<DepositResponseDto>>.Success("Retrieved successfully", result.Data.deposits, 200));
         }
 
         [HttpGet("{id}")]
@@ -47,13 +52,18 @@ namespace DropMate2.ControllerEndPoints.Controllers
         public async Task<IActionResult> ConfirmDeposit(string reference)
         {
             await _services.DepositService.CompleteDeposit(reference);
-            return Ok("Payment Received...");
+            return Ok(StandardResponse<string>.Success("Payment received successfully", null, 200));
         }
 
         [HttpPost]
         public async Task<IActionResult> InitializeDeposit([FromBody] DepositRequestDto requestDto)
         {
-            var result = await _services.DepositService.InitializeDeposit(requestDto);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userEmailClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
+            string email = userEmailClaim.Value;
+            var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = userIdClaim.Value;
+            var result = await _services.DepositService.InitializeDeposit(requestDto,email, userId);
             return Ok(result);
         }
 
@@ -61,7 +71,7 @@ namespace DropMate2.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeleteDeposit(int id)
         {
             await _services.DepositService.DeleteDeposit(id);
-            return NoContent();
+            return Ok(StandardResponse<string>.Success("Deposit deleted successfully", null, 200));
         }
     }
 }

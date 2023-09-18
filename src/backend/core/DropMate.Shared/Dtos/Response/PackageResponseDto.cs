@@ -13,6 +13,7 @@ namespace DropMate.Shared.Dtos.Response
     public record PackageResponseDto
     {
         public int Id { get; init; }
+        public string ProductName { get; init; }
         public DateTime CreatedDate { get; init; }
         public int? TravelPlanId { get; init; }
         

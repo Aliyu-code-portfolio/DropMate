@@ -37,7 +37,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             StandardResponse<(IEnumerable<ReviewResponseDto> reviews,MetaData metaData)> result = await _services.ReviewService
                 .GetAllReviewsAsync(requestParameters, false);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.Data.metaData));
-            return Ok(result.Data.reviews);
+            return Ok(StandardResponse<IEnumerable<ReviewResponseDto>>.Success("Retrieved successfully", result.Data.reviews, 200));
         }
 
         [HttpGet("{id}")]
@@ -58,7 +58,7 @@ namespace DropMate.ControllerEndPoints.Controllers
         public async Task<IActionResult> DeleteReview(int id)
         {
             await _services.ReviewService.DeleteReview(id);
-            return Ok();
+            return Ok(StandardResponse<string>.Success("Package deleted successfully", null, 200));
         }
         [HttpOptions]
         public IActionResult Options()
