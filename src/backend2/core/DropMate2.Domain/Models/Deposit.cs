@@ -12,6 +12,7 @@ namespace DropMate2.Domain.Models
         [Column(TypeName ="money")]
         public decimal Amount { get; set; }
         public string Reference { get; set; }
+        public string Email { get; set; }
 
         public virtual Wallet? Wallet { get; set; }
     }

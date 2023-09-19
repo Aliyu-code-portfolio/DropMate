@@ -100,7 +100,7 @@ namespace DropMate.ControllerEndPoints.Controllers
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = userIdClaim.Value;
-            await _services.TravelPlanService.RemovePackageFromTravelPlan(userId,requestDto.travelPlanId, requestDto.packageId, token);
+            await _services.TravelPlanService.RemovePackageFromTravelPlan(userId,requestDto.packageId, requestDto.travelPlanId, token);
             return Ok(StandardResponse<string>.Success("Package removed successfully", null, 200));
         }
 

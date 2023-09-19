@@ -51,6 +51,13 @@ namespace DropMate.Service.Services
             await CreateUserWallet(user.Id);
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
+
+        public async Task AddUserAsAdmin(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email)
+                ?? throw new UserNotFoundException(email);
+            await _userManager.AddToRoleAsync(user, "Admin");
+        }
         public async Task<string> RegisterAdmin(UserCreateRequestDto requestDto)
         {
             User user = _mapper.Map<User>(requestDto);
@@ -213,7 +220,7 @@ namespace DropMate.Service.Services
         private async Task CreateUserWallet(string userId)
         {
             var _paymentHelper = new PaymentHelper();
-            var content = new StringContent(JsonSerializer.Serialize(new {Id =  userId}));
+            var content = new StringContent(JsonSerializer.Serialize(new {Id =  userId}),Encoding.UTF8, "application/json");
             using(HttpResponseMessage response =await _paymentHelper.ApiHelper.PostAsync("wallets", content))
             {
                 if(!response.IsSuccessStatusCode)

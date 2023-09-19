@@ -27,7 +27,7 @@ namespace DropMate.Persistence.Repositories
         public async Task<PagedList<Package>> GetAllPackagesAsync(PackageRequestParameter requestParameter,bool trackChanges)
         {
             List<Package> packages = await FindAll(trackChanges).Where(p => !p.IsDeleted).Skip((requestParameter.PageNumber-1)*requestParameter.PageSize)
-                .Take(requestParameter.PageSize).Sort(requestParameter.OrderBy).Include(p => p.PackageOwnerId)
+                .Take(requestParameter.PageSize).Sort(requestParameter.OrderBy).Include(p => p.Owner)
                 .Include(p => p.TravelPlan).ToListAsync();
             int count = await FindAll(trackChanges).Where(p => !p.IsDeleted).CountAsync();  
             return new PagedList<Package>(packages, count,requestParameter.PageNumber,requestParameter.PageSize);

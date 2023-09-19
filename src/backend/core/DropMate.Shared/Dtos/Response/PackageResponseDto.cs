@@ -34,8 +34,10 @@ namespace DropMate.Shared.Dtos.Response
         public PackageWeight PackageWeight { get; init; }
         public decimal Price { get; init; }
         public string? EstimatedDuration { get; init; }
+        public int RecieveCode { get; init; }
+        public int DeliverCode { get; init; }
 
         public Status Status { get; init; }
-        public TravelPlanResponse TravelPlan { get; set; }
+        //public TravelPlanResponse TravelPlan { get; set; }
     }
 }

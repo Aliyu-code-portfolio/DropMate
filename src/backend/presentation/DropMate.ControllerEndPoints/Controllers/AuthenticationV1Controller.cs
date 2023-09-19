@@ -36,18 +36,14 @@ namespace DropMate.ControllerEndPoints.Controllers
             return StatusCode(201,StandardResponse<string>.Success("Account created successfully. Please confirm your email",null,201));
         }
         
-        [HttpPost("register/admin")]
-        [ServiceFilter(typeof(ValidationActionFilters))]
-        public async Task<IActionResult> RegisterAdmin([FromForm] UserCreateRequestDto requestDto)
+        [HttpPost("add-admin")]
+        public async Task<IActionResult> AddAmin([FromForm] string email)
         {
-            string token = await _services.AuthenticationService.RegisterAdmin(requestDto);
-
-            string encodedToken = System.Text.Encodings.Web.UrlEncoder.Default.Encode(token);
-            string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
-
-            _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
-            return StatusCode(201, StandardResponse<string>.Success("Account created successfully. Please confirm your email", null, 201));
+            await _services.AuthenticationService.AddUserAsAdmin(email);
+            return StatusCode(200,StandardResponse<string>.Success("Add admin successfully.",null,200));
         }
+        
+
         
         [HttpPost("login")]
         [ServiceFilter(typeof(ValidationActionFilters))]
@@ -178,6 +174,18 @@ namespace DropMate.ControllerEndPoints.Controllers
             await _services.AuthenticationService.ChangePassword(email, requestDto);
             return Ok(StandardResponse<string>.Success("Your password has been changed successfully", null, 201));
         }
+        //remove due to industrial standards
+        [HttpPost("register/admin")]
+        [ServiceFilter(typeof(ValidationActionFilters))]
+        public async Task<IActionResult> RegisterAdmin([FromForm] UserCreateRequestDto requestDto)
+        {
+            string token = await _services.AuthenticationService.RegisterAdmin(requestDto);
 
+            string encodedToken = System.Text.Encodings.Web.UrlEncoder.Default.Encode(token);
+            string callback_url = Request.Scheme + "://" + Request.Host + $"/api/authentication/confirm-email/{requestDto.Email}/{encodedToken}";
+
+            _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
+            return StatusCode(201, StandardResponse<string>.Success("Account created successfully. Please confirm your email", null, 201));
+        }
     }
 }

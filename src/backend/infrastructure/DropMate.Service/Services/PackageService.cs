@@ -195,7 +195,7 @@ namespace DropMate.Service.Services
         private decimal GetPrice(string distance, PackageWeight weight)
         {
             decimal distanceInDigits = decimal.Parse(distance.Substring(0,distance.Length-2));
-            decimal price = 250 * distanceInDigits *(int)weight;
+            decimal price = 50 * distanceInDigits *(int)weight;
             return price;
         }
         private void sendPackageDeliveredEmail(string email, string packageName)

@@ -136,7 +136,8 @@ namespace DropMate2.Service.Services
             {
                 WalletId = initializedPayment.WalletId,
                 Amount = initializedPayment.Amount,
-                Reference = initializedPayment.Reference
+                Reference = initializedPayment.Reference,
+                Email = initializedPayment.Email
             };
             _unitOfWork.DepositRepository.CreateDeposit(deposit);
             _unitOfWork.WalletRepository.UpdateWallet(creditWallet);
