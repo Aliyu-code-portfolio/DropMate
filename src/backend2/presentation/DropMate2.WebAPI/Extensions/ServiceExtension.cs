@@ -70,7 +70,7 @@ namespace DropMate2.WebAPI.Extensions
         {
             services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Contacts API", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "DropMate2 API", Version = "v1" });
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -96,6 +96,10 @@ namespace DropMate2.WebAPI.Extensions
         }
     });
             });
+        }
+        public static IApplicationBuilder UseSwaggerAuthorized(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<SwaggerBasicAuthMiddleware>();
         }
     }
 }

@@ -6,23 +6,23 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/backend/presentation/DropMate.WebAPI/DropMate.WebAPI.csproj", "src/backend/presentation/DropMate.WebAPI/"]
-COPY ["src/backend/core/LoggerService/LoggerService.csproj", "src/backend/core/LoggerService/"]
-COPY ["src/backend/core/DropMate.Application/DropMate.Application.csproj", "src/backend/core/DropMate.Application/"]
-COPY ["src/backend/core/DropMate.Domain/DropMate.Domain.csproj", "src/backend/core/DropMate.Domain/"]
-COPY ["src/backend/core/DropMate.Shared/DropMate.Shared.csproj", "src/backend/core/DropMate.Shared/"]
-COPY ["src/backend/infrastructure/DropMate.Persistence/DropMate.Persistence.csproj", "src/backend/infrastructure/DropMate.Persistence/"]
-COPY ["src/backend/infrastructure/DropMate.Service/DropMate.Service.csproj", "src/backend/infrastructure/DropMate.Service/"]
-COPY ["src/backend/presentation/DropMate.ControllerEndPoints/DropMate.ControllerEndPoints.csproj", "src/backend/presentation/DropMate.ControllerEndPoints/"]
-RUN dotnet restore "src/backend/presentation/DropMate.WebAPI/DropMate.WebAPI.csproj"
+COPY ["src/backend2/presentation/DropMate2.WebAPI/DropMate2.WebAPI.csproj", "src/backend2/presentation/DropMate2.WebAPI/"]
+COPY ["src/backend2/core/DropMate2.LoggerService/DropMate2.LoggerService.csproj", "src/backend2/core/DropMate2.LoggerService/"]
+COPY ["src/backend2/core/DropMate2.Application/DropMate2.Application.csproj", "src/backend2/core/DropMate2.Application/"]
+COPY ["src/backend2/core/DropMate2.Domain/DropMate2.Domain.csproj", "src/backend2/core/DropMate2.Domain/"]
+COPY ["src/backend2/core/DropMate2.Shared/DropMate2.Shared.csproj", "src/backend2/core/DropMate2.Shared/"]
+COPY ["src/backend2/infrastructure/DropMate2.Persistence/DropMate2.Persistence.csproj", "src/backend2/infrastructure/DropMate2.Persistence/"]
+COPY ["src/backend2/infrastructure/DropMate2.Service/DropMate2.Service.csproj", "src/backend2/infrastructure/DropMate2.Service/"]
+COPY ["src/backend2/presentation/DropMate2.ControllerEndPoints/DropMate2.ControllerEndPoints.csproj", "src/backend2/presentation/DropMate2.ControllerEndPoints/"]
+RUN dotnet restore "src/backend2/presentation/DropMate2.WebAPI/DropMate2.WebAPI.csproj"
 COPY . .
-WORKDIR "/src/src/backend/presentation/DropMate.WebAPI"
-RUN dotnet build "DropMate.WebAPI.csproj" -c Release -o /app/build
+WORKDIR "/src/src/backend2/presentation/DropMate2.WebAPI"
+RUN dotnet build "DropMate2.WebAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DropMate.WebAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DropMate2.WebAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DropMate.WebAPI.dll"]
+ENTRYPOINT ["dotnet", "DropMate2.WebAPI.dll"]
