@@ -71,7 +71,7 @@ namespace DropMate2.Service.Services
             {
                 email = email,
                 amount = depositRequest.Amount.ToString()+"00",
-                callback_url = "https://bit.ly/paystack1123"//use this endpoint to call your endpoint /deposits/confirm/{initPayId}  to verify the payment made
+                callback_url = $"https://dropmate2.onrender.com/api/deposits/confirm/{initPayId}"//use this endpoint to call your endpoint /deposits/confirm/{initPayId}  to verify the payment made
             };
             var serializedDto = JsonSerializer.Serialize(initializePaymentRequest);
             var httpContent = new StringContent(serializedDto, Encoding.UTF8,"application/json");
