@@ -16,13 +16,13 @@ namespace DropMate.Shared.Dtos.Response
         public DateTime CreatedDate { get; init; } 
         public string TravelerId { get; init; }
 
-        public LagosLocation DepartureLocation { get; init; }
+        public string DepartureLocation { get; init; }
 
-        public LagosLocation ArrivalLocation { get; init; }
+        public string ArrivalLocation { get; init; }
 
         public DateTime DepartureDateTime { get; init; }
 
-        public PackageWeight MaximumPackageWeight { get; init; }
+        public string MaximumPackageWeight { get; init; }
 
         public bool IsActive { get; init; }
         public string? EstimatedPickUpTime { get; set; }

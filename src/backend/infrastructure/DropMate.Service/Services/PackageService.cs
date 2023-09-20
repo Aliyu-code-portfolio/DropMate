@@ -56,7 +56,8 @@ namespace DropMate.Service.Services
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
             foreach(TravelPlanResponse response in responseDtos)
             {
-                var result = CalculateDistanceOfLocations(response.DepartureLocation, package.DepartureLocation);
+                var result = CalculateDistanceOfLocations((LagosLocation)Enum.Parse(typeof(LagosLocation),response.DepartureLocation,true),
+                    package.DepartureLocation);
                 response.DistanceFromPickUp= result.Item1;
                 response.EstimatedPickUpTime= result.Item2;
             }
@@ -131,7 +132,8 @@ namespace DropMate.Service.Services
             IEnumerable<TravelPlanResponse> responseDtos = _mapper.Map<IEnumerable<TravelPlanResponse>>(plans);
             foreach (TravelPlanResponse response in responseDtos)
             {
-                var result = CalculateDistanceOfLocations(response.DepartureLocation, package.DepartureLocation);
+                var result = CalculateDistanceOfLocations((LagosLocation)Enum.Parse(typeof(LagosLocation), response.DepartureLocation, true),
+                    package.DepartureLocation);
                 response.DistanceFromPickUp = result.Item1;
                 response.EstimatedPickUpTime = result.Item2;
             }

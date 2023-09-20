@@ -27,8 +27,8 @@ namespace DropMate.Shared.Dtos.Request
         [PasswordPropertyText]
         public string Password { get; init; }
 
-        [Phone(ErrorMessage = "Invalid phone number.")]
-        public string? PhoneNumber { get; init; }
+        /*[Phone(ErrorMessage = "Invalid phone number.")]
+        public string? PhoneNumber { get; init; }*/
 
         [Required(ErrorMessage ="Address is required")]
         [MaxLength(200, ErrorMessage = "Maximum length is 200")]

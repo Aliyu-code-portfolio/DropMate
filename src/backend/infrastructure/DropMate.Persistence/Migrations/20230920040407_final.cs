@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DropMate.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class identity : Migration
+    public partial class final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -199,6 +199,7 @@ namespace DropMate.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TravelPlanId = table.Column<int>(type: "int", nullable: true),
                     PackageOwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewId = table.Column<int>(type: "int", nullable: true),
@@ -271,8 +272,8 @@ namespace DropMate.Persistence.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "b876fadd-d1f3-49ab-a4bb-53cbf43fd8a6", "4363756e-aaaf-434f-9725-0974a2de5859", "User", "USER" },
-                    { "c2ee3932-f872-4b73-9867-dcc677f2979f", "42fed2c6-31df-4085-b59d-c7f242ad09ae", "Admin", "ADMIN" }
+                    { "0534557f-82bb-428d-8c1d-405c0a7ece1e", "a1351947-11bb-423d-a658-7e4e46cb4e39", "User", "USER" },
+                    { "73819ed7-65ab-4de3-b047-7a36e5742f3b", "9af19b2e-dabd-4eeb-8373-05678e63f107", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

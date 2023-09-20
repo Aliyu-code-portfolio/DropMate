@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DropMate.Persistence.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230901054537_identity")]
-    partial class identity
+    [Migration("20230920040407_final")]
+    partial class final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,6 +86,10 @@ namespace DropMate.Persistence.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RecieveCode")
                         .HasColumnType("int");
@@ -320,15 +324,15 @@ namespace DropMate.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b876fadd-d1f3-49ab-a4bb-53cbf43fd8a6",
-                            ConcurrencyStamp = "4363756e-aaaf-434f-9725-0974a2de5859",
+                            Id = "0534557f-82bb-428d-8c1d-405c0a7ece1e",
+                            ConcurrencyStamp = "a1351947-11bb-423d-a658-7e4e46cb4e39",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "c2ee3932-f872-4b73-9867-dcc677f2979f",
-                            ConcurrencyStamp = "42fed2c6-31df-4085-b59d-c7f242ad09ae",
+                            Id = "73819ed7-65ab-4de3-b047-7a36e5742f3b",
+                            ConcurrencyStamp = "9af19b2e-dabd-4eeb-8373-05678e63f107",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
