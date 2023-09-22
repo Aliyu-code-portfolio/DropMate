@@ -14,7 +14,7 @@ namespace DropMate.Shared.HelperModels
         {
             ApiHelper = new()
             {
-                BaseAddress = new Uri("https://dropmate2.onrender.com/api/")
+                BaseAddress = new Uri("https://localhost:7204/api/")
             };
             ApiHelper.DefaultRequestHeaders.Accept.Clear();
             if(!string.IsNullOrEmpty(token))
