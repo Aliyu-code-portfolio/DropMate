@@ -1,0 +1,14 @@
+How to Implement OData
+ 
+Step 1: Install Microsoft Odata
+Step 2: Add Config Folder to Shared Project or any of your related project
+step 3: Add OdataEdmBuilder class in Config Folder
+Step 4: Add ODataParameterOperationFilter class in Config Folder
+Step 5: Add ODataResponseFilterAttribute Class in Config Folder
+Step 6: Extend builder.Services.AddControllers() to accept Odata Service:  options.Select().Filter().OrderBy().SetMaxTop(20).Count().Expand();
+ 
+Step 7: Add this options.OperationFilter<ODataParameterOperationFilter>(); to AddSwaggerGen
+ 
+Step 8: Add the following to your Controllers: [ODataAttributeRouting]
+ 
+Step 9: Add [EnableQuery] to your Get Actions
