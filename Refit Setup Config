@@ -1,0 +1,18 @@
+Step 1: Add Refit Nugget Package
+<PackageReference Include="Refit" Version="7.0.0" />
+<PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
+ 
+Step 2: Configure the Middleware
+var apiBaseUrl = builder.Configuration["RefitBaseUrl"];
+var settings = new RefitSettings();
+builder.Services.AddRefitClient<ILocalAPIService>(settings).ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseUrl));
+//Note that apiBaseUrl is located in AppSettings
+//Add this to Appsettings "RefitBaseUrl": "https://localhost:7298",
+ 
+Step 3: Create an Interface with any name. e.g ILocalAPIService
+ 
+Example: [Get("/api/{controller}/{actions}")] Task<ApiResponse<V>> GetAll<V>(string controller, string actions);
+ 
+Step 4: Register the Refit interface in your class/Handler
+ 
+Step 5: Fetch record from Http Content
