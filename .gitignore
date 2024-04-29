@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /src/backend/presentation/DropMate.WebAPI/appsettings.json
 /src/backend2/presentation/DropMate2.WebAPI/appsettings.json
+/.containers/db

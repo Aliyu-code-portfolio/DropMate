@@ -29,7 +29,7 @@ namespace DropMate.WebAPI.Extensions
              .AllowAnyHeader());
         });
         public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)=> 
-            services.AddDbContext<RepositoryContext>(option=>option.UseSqlServer(configuration.GetConnectionString("Default")));
+            services.AddDbContext<RepositoryContext>(option=>option.UseSqlServer(configuration.GetConnectionString("db")));
 
         public static void ConfigureLoggerManager(this IServiceCollection services) => services.AddSingleton<ILoggerManager, LoggerManager>();
         public static void ConfigureUnitOfWork(this IServiceCollection services)=> services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -115,7 +115,7 @@ namespace DropMate.WebAPI.Extensions
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],
                     IssuerSigningKey = new
-                    SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
                 };
             });
         }

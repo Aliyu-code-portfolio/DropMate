@@ -35,7 +35,7 @@ namespace DropMate2.WebAPI.Extensions
         public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<RepositoryContext>(option => option
-            .UseSqlServer(configuration.GetConnectionString("Default")));
+            .UseSqlServer(configuration.GetConnectionString("db")));
         }
         public static void ConfigureUnitOfWork(this IServiceCollection services)=> services.AddScoped<IUnitOfWork, UnitOfWork>();
         public static void ConfigureLoggerManager(this IServiceCollection services) => services.AddSingleton<ILoggerManager, LoggerManager>();
@@ -62,7 +62,7 @@ namespace DropMate2.WebAPI.Extensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtSettings["validIssuer"], // URL of Microservice 1
                     ValidAudience = jwtSettings["validAudience"], // Identifier for Microservice 1
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)) // Same secret key as Microservice 1
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"])) // Same secret key as Microservice 1
                 };
             });
         }

@@ -1,6 +1,6 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:5003"
+    "BaseUrl": "http://localhost:5005/"
   },
   "Routes": [
     {
@@ -29,7 +29,7 @@
     },
     {
       "UpstreamPathTemplate": "/gateway/wallets",
-      "UpstreamHttpMethod": [ "GET", "POST","DELETE" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ],
       "DownstreamPathTemplate": "/api/wallets",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -75,6 +75,6 @@
         }
       ]
     }
-    
+
   ]
 }

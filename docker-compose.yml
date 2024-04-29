@@ -3,13 +3,69 @@ version: '3.4'
 services:
   dropmate.webapi:
     image: ${DOCKER_REGISTRY-}dropmatewebapi
+    environment:
+      - CONNECTION_STRING=Host=dropmatedb;Port=5432;Database=dropmateDB;Username=postgres;Password=postgres
+    # depends_on:
+    #   - dropmatedb
+    ports:
+      - "5007:80"
+    container_name: dropmate-api1
     build:
       context: .
       dockerfile: src/backend/presentation/DropMate.WebAPI/Dockerfile
 
+
   dropmate2.webapi:
     image: ${DOCKER_REGISTRY-}dropmate2webapi
+    environment:
+      - CONNECTION_STRING=Host=dropmatedb;Port=5432;Database=dropmateDB;Username=postgres;Password=postgres
+    # depends_on:
+    #   - dropmatedb
+    ports:
+      - "5006:80"
+    container_name: dropmate-api2
     build:
       context: .
       dockerfile: src/backend2/presentation/DropMate2.WebAPI/Dockerfile
+
+
+  gateway.dropmate:
+    image: ${DOCKER_REGISTRY-}dropmategateway
+    container_name: dropmate-gateway
+    ports:
+      - "5005:80"
+    build:
+      context: .
+      dockerfile: src/Gateway.DropMate/Dockerfile
+
+  gateway2.dropmate:
+    image: ${DOCKER_REGISTRY-}dropmategateway
+    container_name: dropmate2-gateway
+    ports:
+      - "5010:80"
+    build:
+      context: .
+      dockerfile: src/Gateway.DropMate/Dockerfile
+
+  dropmate.loadbalancer:
+    image: ${DOCKER_REGISTRY-}dropmateloadbalancer
+    container_name: dropmate-loadbalancer
+    ports:
+      - "5009:80"
+    build:
+      context: .
+      dockerfile: src/DropMate_LoadBalancer/Dockerfile
+
+  # dropmatedb:
+  #   image: postgres:latest
+  #   container_name: dropmate-db
+  #   environment: 
+  #       - POSTGRES_DB=dropmateDB
+  #       - POSTGRES_USER=postgres
+  #       - POSTGRES_PASSWORD=postgres
+  #   volumes:
+  #       - ./.containers/db:/var/lib/postgresql/data
+  #   ports:
+  #       - 5432:5432
+    
 
