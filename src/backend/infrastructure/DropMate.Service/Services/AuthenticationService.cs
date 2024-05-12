@@ -112,8 +112,7 @@ namespace DropMate.Service.Services
 
         private SigningCredentials GetServerSigningCredentials()
         {
-            string envSecret = Environment.GetEnvironmentVariable("SECRET");
-            byte[] key = Encoding.UTF8.GetBytes(envSecret);
+            byte[] key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtSettings")["Key"]);
             var secret = new SymmetricSecurityKey(key);
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
