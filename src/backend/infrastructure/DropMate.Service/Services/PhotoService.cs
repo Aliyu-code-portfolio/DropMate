@@ -21,7 +21,7 @@ namespace DropMate.Service.Services
         public PhotoService(IConfiguration configuration)
         {
             Configuration = configuration;
-            var cloudinarySettings = Configuration.GetSection("CloudinarySettings");
+            var cloudinarySettings = Configuration.GetSection("CloudinaryConfig");
 
             Account account = new Account(cloudinarySettings["CloudName"]
                 , cloudinarySettings["ApiKey"], cloudinarySettings["ApiSecret"]

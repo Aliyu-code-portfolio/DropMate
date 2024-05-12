@@ -48,7 +48,7 @@ var logger = app.Services.GetRequiredService<ILoggerManager>();
 app.ConfigureExceptionHandler(logger);
 
 // Configure the HTTP request pipeline.
-app.UseSwaggerAuthorized();
+//app.UseSwaggerAuthorized();
 app.UseSwagger();
 app.UseSwaggerUI(c=> c.SwaggerEndpoint("/swagger/v1/swagger.json", "DropMate API v1"));
 

@@ -20,11 +20,11 @@ namespace DropMate.Service.Services
 
         public void SendEmail(string toAddress, string subject, string body)
         {
-            string smtpHost = _configuration["SmtpSettings:Host"];
-            int smtpPort = int.Parse(_configuration["SmtpSettings:Port"]);
-            string smtpUsername = _configuration["SmtpSettings:Username"];
-            string smtpPassword = _configuration["SmtpSettings:Password"];
-            bool enableSsl = bool.Parse(_configuration["SmtpSettings:EnableSsl"]);
+            string smtpHost = _configuration["EmailConfiguration:Host"];
+            int smtpPort = int.Parse(_configuration["EmailConfiguration:Port"]);
+            string smtpUsername = _configuration["EmailConfiguration:Username"];
+            string smtpPassword = _configuration["EmailConfiguration:Password"];
+            bool enableSsl = bool.Parse(_configuration["EmailConfiguration:EnableSsl"]);
 
             using (var smtpClient = new SmtpClient(smtpHost, smtpPort))
             {

@@ -35,13 +35,6 @@ namespace DropMate.ControllerEndPoints.Controllers
             _services.AuthenticationService.SendConfirmationEmail(requestDto.Email, callback_url);
             return StatusCode(201,StandardResponse<string>.Success("Account created successfully. Please confirm your email",null,201));
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Test()
-        {
-
-            return Ok("Request sent");
-        }
         
         [HttpPost("add-admin")]
         public async Task<IActionResult> AddAmin([FromForm] string email)

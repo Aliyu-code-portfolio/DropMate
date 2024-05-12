@@ -45,7 +45,6 @@ namespace DropMate2.WebAPI.Extensions
         public static void ConfigureIdentityService(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = Environment.GetEnvironmentVariable("SECRET");
 
             services.AddAuthentication(opt =>
             {
