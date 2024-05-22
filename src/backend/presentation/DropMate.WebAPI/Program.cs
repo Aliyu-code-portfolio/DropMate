@@ -27,7 +27,8 @@ builder.Services.ConfigureIdentity();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
-builder.Services.ConfigureJWT(builder.Configuration);
+//builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureIdentityServer(builder.Configuration);
 builder.Services.ConfigureSwaggerAuth();
 
 builder.Services.AddControllers(

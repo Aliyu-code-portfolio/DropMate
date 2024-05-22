@@ -6,6 +6,7 @@ using DropMate.Domain.Models;
 using DropMate.Persistence.Common;
 using DropMate.Service.Manager;
 using DropMate.Service.Services;
+using IdentityServer4.Models;
 using LoggerService;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -95,7 +96,7 @@ namespace DropMate.WebAPI.Extensions
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
         }
 
-        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        /*public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
             services.AddAuthentication(opt =>
@@ -117,6 +118,30 @@ namespace DropMate.WebAPI.Extensions
                     SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
                 };
             });
+        }*/
+        
+        public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
+        {
+            var key = configuration.GetSection("JwtSettings")["Key"];
+            services.AddIdentityServer()
+            .AddDeveloperSigningCredential()
+            .AddInMemoryApiScopes(new List<ApiScope> { new ApiScope("dropmate", "Drop Mate") })
+            .AddInMemoryClients(new List<Client> {
+                new Client {
+                    ClientId = "dropmate",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets = { new Secret(key.Sha256()) },
+                    AllowedScopes = { "dropmate" }
+                }
+            });
+
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://dropmate1.onrender.com";
+                    options.RequireHttpsMetadata = false;
+                    options.Audience = "dropmate";
+                });
         }
         public static void ConfigureSwaggerAuth(this IServiceCollection services)
         {
