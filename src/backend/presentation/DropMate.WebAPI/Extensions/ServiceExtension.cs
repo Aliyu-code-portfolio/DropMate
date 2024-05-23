@@ -125,7 +125,7 @@ namespace DropMate.WebAPI.Extensions
             var key = configuration.GetSection("JwtSettings")["Key"];
             services.AddIdentityServer()
             .AddDeveloperSigningCredential()
-            .AddInMemoryApiScopes(new List<ApiScope> { new ApiScope("dropmate", "Drop Mate") })
+            .AddInMemoryApiScopes(new List<ApiScope> { new ApiScope("dropmate", "dropmate") })
             .AddInMemoryClients(new List<Client> {
                 new Client {
                     ClientId = "dropmate",
@@ -139,7 +139,7 @@ namespace DropMate.WebAPI.Extensions
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = "https://dropmate1.onrender.com";
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = true;
                     options.Audience = "dropmate";
                 });
         }

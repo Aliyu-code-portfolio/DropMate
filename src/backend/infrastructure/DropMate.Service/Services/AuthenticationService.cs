@@ -136,7 +136,7 @@ namespace DropMate.Service.Services
             IConfigurationSection jwtSettings = _configuration.GetSection("JwtSettings");
             JwtSecurityToken tokenOptions = new JwtSecurityToken
                 (
-            issuer: "https://dropmate1.onrender.com",
+            issuer: "dropmate",
                     audience: "dropmate",
                     claims: claims,
                     expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
