@@ -96,7 +96,7 @@ namespace DropMate.WebAPI.Extensions
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
         }
 
-        /*public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
             services.AddAuthentication(opt =>
@@ -118,9 +118,9 @@ namespace DropMate.WebAPI.Extensions
                     SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
                 };
             });
-        }*/
-        
-        public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
+        }
+
+        /*public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
         {
             var key = configuration.GetSection("JwtSettings")["Key"];
             services.AddIdentityServer()
@@ -142,7 +142,7 @@ namespace DropMate.WebAPI.Extensions
                     options.RequireHttpsMetadata = true;
                     options.Audience = "dropmate";
                 });
-        }
+        }*/
         public static void ConfigureSwaggerAuth(this IServiceCollection services)
         {
             services.AddSwaggerGen(opt =>

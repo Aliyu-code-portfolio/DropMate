@@ -13,7 +13,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using static System.Net.WebRequestMethods;
 
 namespace DropMate.Service.Services
 {
@@ -136,8 +135,8 @@ namespace DropMate.Service.Services
             IConfigurationSection jwtSettings = _configuration.GetSection("JwtSettings");
             JwtSecurityToken tokenOptions = new JwtSecurityToken
                 (
-            issuer: "dropmate",
-                    audience: "dropmate",
+                    issuer: jwtSettings["validIssuer"],
+                    audience: jwtSettings["validAudience"],
                     claims: claims,
                     expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
                     signingCredentials: signingCredentials
